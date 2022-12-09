@@ -1,0 +1,17 @@
+version: "3.5"
+
+services:
+  pres_conf_db:
+    image: postgres:14.3-alpine
+    environment:
+      - POSTGRES_DB=pres_conf_db
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5432:5432"
+      - "5000:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+volumes:
+  db:
+    driver: local
