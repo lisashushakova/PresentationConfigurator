@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, ForeignKey, DateTime, Identity
-from sqlalchemy import Column, Integer, String, LargeBinary
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import Table, Column, Integer, String, MetaData, LargeBinary
+from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
@@ -20,16 +20,22 @@ class Presentations(Base):
     id = Column('id', String, primary_key=True)
     name = Column('name', String, nullable=False)
     owner_id = Column('owner_id', String, ForeignKey("users.id"), nullable=False)
+    folder_id = Column('folder_id', String, nullable=False)
     modified_time = Column('modified_time', DateTime, nullable=False)
+
+    child_slides = relationship('Slides', backref='presentations', cascade='delete', passive_deletes=True)
 
 
 class Slides(Base):
     __tablename__ = 'slides'
 
     id = Column('id', Integer, Identity(start=1, increment=1), primary_key=True)
-    pres_id = Column('pres_id', String, ForeignKey("presentations.id"), nullable=False)
+    pres_id = Column('pres_id', String, ForeignKey("presentations.id", ondelete='CASCADE'), nullable=False)
     index = Column('index', Integer, nullable=False)
     thumbnail = Column('thumbnail', LargeBinary, nullable=False)
+
+    parent_pres = relationship('Presentations', backref='slides')
+    child_links = relationship('Links', backref='slides', cascade='delete', passive_deletes=True)
 
 
 class Tags(Base):
@@ -44,9 +50,10 @@ class Links(Base):
     __tablename__ = 'links'
 
     id = Column('id', Integer, Identity(start=1, increment=1), primary_key=True)
-    slide_id = Column('slide_id', Integer, ForeignKey("slides.id"), nullable=False)
+    slide_id = Column('slide_id', Integer, ForeignKey("slides.id", ondelete='CASCADE'), nullable=False)
     tag_id = Column('tag_id', Integer, ForeignKey("tags.id"), nullable=False)
     value = Column('value', Integer)
+    parent_slides = relationship('Slides', backref='links')
 
 
 class DatabaseHandler:

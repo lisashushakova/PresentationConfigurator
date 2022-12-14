@@ -1,10 +1,12 @@
 import base64
 import glob
 import io
+import json
 import os
 import re
 from datetime import datetime
 from typing import List
+
 import fastapi
 import uvicorn as uvicorn
 from fastapi import Query
@@ -12,13 +14,20 @@ from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
+from pptx import Presentation
 from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import RedirectResponse
+from starlette.requests import Request
+from starlette.responses import RedirectResponse, Response, HTMLResponse
+from starlette.staticfiles import StaticFiles
+from starlette.templating import Jinja2Templates
+
 from database.db_handler import DatabaseHandler, Users, Presentations, Slides, Tags, Links
 from utils import utils
 import aspose.slides as slides
 
 app = fastapi.FastAPI()
+
+app.mount('/views', StaticFiles(directory="views"), name="views")
 
 origins = [
     "http://localhost",
@@ -37,13 +46,24 @@ db_handler = DatabaseHandler()
 current_user_id = None
 
 flow = Flow.from_client_secrets_file(
-    'auth/oauth2.keys.json',
-    scopes=['openid',
-            'https://www.googleapis.com/auth/userinfo.email',
-            'https://www.googleapis.com/auth/userinfo.profile',
-            'https://www.googleapis.com/auth/drive'],
-    redirect_uri="http://localhost:8000/auth/sessions"
-)
+        'auth/oauth2.keys.json',
+        scopes=['openid',
+                'https://www.googleapis.com/auth/userinfo.email',
+                'https://www.googleapis.com/auth/userinfo.profile',
+                'https://www.googleapis.com/auth/drive',
+                'https://www.googleapis.com/auth/presentations'],
+        redirect_uri="http://localhost:8000/auth/sessions"
+    )
+
+
+
+
+
+@app.get('/')
+def root():
+    with open(os.path.join('views/index.html'), encoding='utf-8') as fh:
+        data = fh.read()
+    return HTMLResponse(content=data)
 
 
 @app.get('/auth/login')
@@ -87,12 +107,19 @@ def pres_list(folder_ids: List[str] = Query(...)):
     credentials = flow.credentials
     drive = build('drive', 'v3', credentials=credentials)
     q = "mimeType='application/vnd.openxmlformats-officedocument.presentationml.presentation' " \
-        "and trashed = false" \
-        " and (" + " or ".join(list(map(lambda x: f"'{x}' in parents", folder_ids))) + ")"
+        "and trashed = false"
     fields = 'files(id, name, modifiedTime)'
-    response = drive.files().list(q=q, fields=fields).execute()
-    files = response.get('files')
-    update_presentations(files)
+    files = []
+    for folder_id in folder_ids:
+        folder_query = q + f" and '{folder_id}' in parents"
+        response = drive.files().list(q=folder_query, fields=fields).execute()
+        folder_files = {
+            'folder_id': folder_id,
+            'presentations': response['files']
+        }
+        update_presentations(folder_files['folder_id'], folder_files['presentations'])
+        files.append(folder_files)
+
     return files
 
 
@@ -115,9 +142,9 @@ def get_slides_by_query(query):
     tag_names = re.findall('[a-z]+[a-z0-9]*', query)
     tag_names = list(filter(lambda x: x not in ['and', 'or', 'not'], tag_names))
     session = db_handler.Session()
-    links_and_tags = session.query(Links, Tags) \
-        .filter(Tags.name.in_(tag_names), Tags.owner_id == current_user_id) \
-        .filter(Links.tag_id == Tags.id) \
+    links_and_tags = session.query(Links, Tags)\
+        .filter(Tags.name.in_(tag_names), Tags.owner_id == current_user_id)\
+        .filter(Links.tag_id == Tags.id)\
         .all()
     slides_tags_values = dict()
     for [link, tag] in links_and_tags:
@@ -150,13 +177,15 @@ def build_presentation(new_pres_info: dict):
     name = new_pres_info.get('name')
     build_from = new_pres_info.get('body')
     for pres in build_from:
-        download_pres(pres.get('id'), f'{pres.get("id")}')
+        download_pres(pres.get('id'), f'{pres.get("id")}.pptx')
     with slides.Presentation() as presentation:
         presentation.slide_size.set_size(slides.SlideSizeType.ON_SCREEN_16X9, slides.SlideSizeScaleType.DO_NOT_SCALE)
         presentation.slides.remove_at(0)
         for pres_from in build_from:
             with slides.Presentation(f"presentations/{pres_from.get('id')}.pptx") as presentation_from:
                 for slide_index in pres_from.get('slides'):
+                    mgr = presentation_from.slides[slide_index].notes_slide_manager
+                    mgr.remove_notes_slide()
                     presentation.slides.add_clone(presentation_from.slides[slide_index])
         presentation.save(f"presentations/{name}.pptx", slides.export.SaveFormat.PPTX)
     utils.clear_watermark(f"presentations/{name}.pptx")
@@ -168,7 +197,37 @@ def build_presentation(new_pres_info: dict):
     }
     media = MediaFileUpload(f"presentations/{name}.pptx",
                             mimetype='application/vnd.openxmlformats-officedocument.presentationml.presentation')
-    file = drive.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    file = drive.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id, name, modifiedTime, parents').execute()
+
+    update_presentations(file.get('parents')[0], [file], download=False)
+
+    session = db_handler.Session()
+    migrate_links = {}
+    index = 0
+    for pres in build_from:
+        pres_id = pres.get('id')
+        slides_indices = pres.get('slides')
+        slides_from = session.query(Slides).filter(Slides.pres_id == pres_id)
+        for i in slides_indices:
+            slide_from = slides_from.filter(Slides.index == i).first()
+            links = session.query(Links).filter(Links.slide_id == slide_from.id).all()
+            migrate_links[index] = links
+            index += 1
+
+    slides_to = session.query(Slides).filter(Slides.pres_id == file.get('id'))
+    for index in migrate_links.keys():
+        slide_to = slides_to.filter(Slides.index == index).first()
+        for link in migrate_links[index]:
+            session.add(Links(
+                slide_id=slide_to.id,
+                tag_id=link.tag_id,
+                value=link.value
+            ))
+    session.commit()
+
     return file.get('id')
 
 
@@ -234,16 +293,37 @@ def download_pres(pres_id, name='temp'):
         print(F'An error occurred: {error}')
         file = None
 
-    with open(f"presentations/{name}.pptx", "wb") as f:
+    with open(f"presentations/{name}", "wb") as f:
         f.write(file.getvalue())
 
 
-def extract_images():
-    utils.extract_images()
+def upload_pres(pres_id, name):
+    credentials = flow.credentials
+    drive = build('drive', 'v2', credentials=credentials)
+
+    file = drive.files().get(fileId=pres_id).execute()
+
+    media_body = MediaFileUpload(
+        f'presentations/{name}',
+        mimetype='application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        resumable=True
+    )
+
+    file = drive.files().update(
+        fileId=pres_id,
+        body=file,
+        media_body=media_body
+    ).execute()
+
+    session = db_handler.Session()
+    session.query(Presentations)\
+        .filter(Presentations.id == file['id'])\
+        .update({'modified_time': file['modifiedDate']})
+    session.commit()
 
 
-def update_presentations(files):
-    clear_temp()
+def update_presentations(folder_id, files, download=True):
+    if download: clear_temp()
     session = db_handler.Session()
     for pres in files:
         found_in_db = session.query(Presentations).get(pres.get('id'))
@@ -252,32 +332,53 @@ def update_presentations(files):
                 id=pres.get('id'),
                 name=pres.get('name'),
                 owner_id=current_user_id,
+                folder_id=folder_id,
                 modified_time=pres.get('modifiedTime')
             ))
             session.commit()
-            update_slides(pres.get('id'))
+            update_slides(pres.get('id'), pres.get('name'))
         elif found_in_db.modified_time < datetime.strptime(pres.get('modifiedTime'), '%Y-%m-%dT%H:%M:%S.%fZ'):
             found_in_db.name = pres.get('name')
             found_in_db.modified_time = pres.get('modifiedTime')
             session.commit()
-            update_slides(pres.get('id'))
-
-
-def update_slides(pres_id):
-    download_pres(pres_id)
-    slides_count = utils.extract_images()
-    session = db_handler.Session()
-    for i in range(slides_count):
-        with open(f'presentations/images/img_{i}.png', "rb") as image:
-            bytes = image.read()
-
-            session.add(Slides(
-                pres_id=pres_id,
-                index=i,
-                thumbnail=bytes
-            ))
-
+            update_slides(pres.get('id'), pres.get('name'), download)
+    session.query(Presentations).filter(
+        Presentations.folder_id == folder_id,
+        ~Presentations.id.in_([x['id'] for x in files])).delete()
     session.commit()
+
+
+def update_slides(pres_id, name, download=True):
+    if download: download_pres(pres_id, name)
+    utils.extract_images(name)
+    pres = Presentation(f'presentations/{name}')
+    pres_slides = pres.slides
+    session = db_handler.Session()
+    current_slide_ids = []
+    for i in range(len(pres_slides)):
+        with open(f'presentations/images/img_{i}.png', "rb") as image:
+            img_bytes = image.read()
+            assigned_id = pres_slides[i].notes_slide.notes_text_frame.text
+            if assigned_id == '':
+                new_slide = Slides(
+                    pres_id=pres_id,
+                    index=i,
+                    thumbnail=img_bytes
+                )
+                session.add(new_slide)
+                session.commit()
+                session.refresh(new_slide)
+                pres_slides[i].notes_slide.notes_text_frame.text = str(new_slide.id)
+                current_slide_ids.append(new_slide.id)
+            else:
+                slide = session.query(Slides).get(assigned_id)
+                slide.index = i
+                slide.thumbnail = img_bytes
+                current_slide_ids.append(assigned_id)
+    pres.save(f'presentations/{name}')
+    session.query(Slides).filter(Slides.pres_id == pres_id, ~Slides.id.in_(current_slide_ids)).delete()
+    session.commit()
+    upload_pres(pres_id, name)
 
 
 def clear_temp():

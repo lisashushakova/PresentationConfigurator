@@ -1,0 +1,311 @@
+:root {
+    --header-height: 75px;
+
+
+    --list-width: 220px;
+    --list-header-height: 40px;
+    --list-header-width: 200px;
+    --list-element-height: 40px;
+    --list-element-width: 200px;
+    --list-content-height: 600px;
+
+    --color-background: #FFFFFF;
+    --color-primary: #D9D9D9;
+    --color-accent: #616161;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-size: 14pt;
+}
+
+html, body {
+  height: 100%;
+}
+
+div, header {
+  display: flex;
+}
+
+header {
+  z-index:10;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  background:  var(--color-background);
+}
+
+header {
+  justify-content: center;
+  align-items: center;
+  height: var(--header-height);
+  width: 100%;
+  background: var(--color-accent);
+  color: whitesmoke;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-size: 18pt;
+}
+
+.content-wrapper {
+  width: 100%;
+  height: calc(100% - var(--header-height));
+
+  flex-direction: row;
+  gap: 2px;
+
+}
+
+.pres-column {
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+
+.pres-list-wrapper, .tag-list-wrapper {
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+}
+
+.main-pres-column {
+
+  height: 800px;
+
+  background: var(--color-primary);
+
+  flex-direction: column;
+  align-items: center;
+
+  flex: 2;
+
+
+}
+
+.main-pres-column > img {
+  width: 600px;
+  box-sizing: border-box;
+}
+
+.pres-drawer-header {
+  width: 850px;
+  height: 50px;
+  margin-top: 20px;
+  background: var(--color-accent);
+}
+
+.pres-drawer {
+  width: 100%;
+  height: calc(100% - 50px);
+  box-sizing: border-box;
+  overflow-y: scroll;
+}
+
+.tools-column {
+  height: 100%;
+  flex-direction: column;
+  flex: 1;
+  gap: 10px;
+  justify-content: center;
+}
+
+.tag-buttons-wrapper {
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 10px;
+
+}
+
+.tag-buttons-wrapper button {
+  width: 80px;
+  font-size: 12pt;
+}
+
+.tag-filter-wrapper input::placeholder {
+  text-align: center;
+  font-size: 12pt;
+}
+
+.list, .list-content {
+  flex-direction: column;
+  align-items: center;
+
+}
+
+.list {
+  width: var(--list-width);
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border: 2px solid lightgrey;
+  box-sizing: border-box;
+}
+
+.list-header {
+  height: var(--list-header-height);
+  width: var(--list-header-width);
+  box-sizing: border-box;
+  padding: 0 15px 0 15px;
+  outline: none;
+  margin-bottom: 5px;
+}
+
+.list-header::placeholder {
+  text-align: center;
+  font-size: 12pt;
+}
+
+.list-content {
+  height: var(--list-content-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.list-content > div {
+  height: var(--list-element-height);
+  width: var(--list-element-width);
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  white-space: nowrap;
+  border-bottom: 1px solid lightgrey
+}
+
+.list-content div:hover {
+  transition: 50ms;
+  background: #e7e7e7;
+}
+
+
+@keyframes example {
+  from {background: whitesmoke;}
+  to {background: #dfdfdf;}
+}
+
+.loading {
+  animation-duration: 1s;
+  animation-name: example;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.selectedSlide {
+  outline: 5px solid red;
+  border-radius: 10px;
+}
+
+
+.tools-line {
+  width: 100%;
+
+  flex-direction: row;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0 30px 0 30px;
+
+}
+
+.pres-drawer {
+  gap: 30px;
+  margin-top: 20px;
+  padding: 30px 15px 30px 15px;
+}
+
+.pres-drawer > img {
+  width: 750px;
+  box-sizing: border-box;
+}
+
+.slides-sources-modal {
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+
+  justify-content: space-between;
+  align-items: center;
+
+  box-sizing: border-box;
+  padding: 10px;
+
+  width: 550px;
+  height: 400px;
+
+  background: var(--color-primary);
+
+  border: 5px solid var(--color-accent);
+
+  visibility: hidden;
+}
+
+.visible.slides-sources-modal {
+  visibility: visible;
+}
+
+.logic-expression {
+flex-direction: row;
+justify-content: space-between;
+height: 50px;
+width: 100%;
+}
+
+#logicalExpressionInput {
+width: 400px;
+height: 50px;
+background: var(--color-accent);
+color: whitesmoke;
+padding-left: 15px
+}
+
+#logicalExpressionInput::placeholder {
+
+color: whitesmoke;
+}
+
+#findImportBtn {
+border: none;
+width: 100px;
+height: 50px;
+background: var(--color-accent);
+color: whitesmoke;
+}
+
+.selected-slides-window {
+width: 520px;
+height: 260px;
+
+box-sizing: border-box;
+border: 2px solid var(--color-accent);
+
+overflow-y: auto;
+}
+
+.actions-buttons-line {
+flex-direction: row;
+justify-content: space-around;
+width: 100%;
+height: 50px;
+}
+
+#confirmImportBtn, #cancelImportBtn {
+border: none;
+width: 150px;
+height: 50px;
+background: var(--color-accent);
+color: whitesmoke
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Presentation Configurator</title>
+    <link href="views/styles/style.css" rel="stylesheet">
+    <link href="views/styles/presentation-drawer.css" rel="stylesheet">
+    <link href="views/styles/custom-drop-list.css" rel="stylesheet">
+</head>
+<body>
+<header>Конфигуратор презентаций</header>
+<div class="slides-sources-modal">
+  <div class='logic-expression'>
+    <input type="text" id="logicalExpressionInput" placeholder="Логическое выражение"/>
+    <button id='findImportBtn'>Найти</button>
+
+  </div>
+  <div class="selected-slides-window">
+
+  </div>
+  <div class="actions-buttons-line">
+    <button id="confirmImportBtn">Импорт</button>
+    <button id="cancelImportBtn">Отмена</button>
+  </div>
+
+</div>
+<div class='content-wrapper'>
+    <div class="pres-column">
+        <div id='presDropList' class="custom-drop-list-body">
+            <div class="custom-drop-list-header">
+                <input class="custom-drop-list-input" type="text" placeholder="Название презентации"/>
+                <button id='addPresBtn'>+</button>
+            </div>
+            <div class="custom-drop-list-content"></div>
+        </div>
+    </div>
+    <div class="main-pres-column">
+        <div class="pres-drawer-header"><button id='importSlidesBtn'>Импорт слайдов</button></div>
+        <div class="pres-drawer"></div>
+    </div>
+    <div class="tools-column">
+
+
+        <div id='slideTagsDropList' class="custom-drop-list-body">
+            <div class="custom-drop-list-header">
+                <input class="custom-drop-list-input" type="text" placeholder="Теги слайда"/>
+                <button id='addTagBtn'>+</button>
+                <button id='delTagBtn'>-</button>
+            </div>
+            <div class="custom-drop-list-content"></div>
+        </div>
+
+    </div>
+</div>
+    <script src="views/scripts/custom-drop-list.js"></script>
+    <script src="views/scripts/presentation-drawer.js"></script>
+    <script src="views/scripts/script.js"></script>
+
+</body>
+</html>
+
+
+
+
+
+
+
