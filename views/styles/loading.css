@@ -1,0 +1,44 @@
+:root {
+    --header-height: 75px;
+
+
+    --list-width: 220px;
+    --list-header-height: 40px;
+    --list-header-width: 200px;
+    --list-element-height: 40px;
+    --list-element-width: 200px;
+    --list-content-height: 600px;
+
+    --color-background: #FFFFFF;
+    --color-primary: #D9D9D9;
+    --color-accent: #616161;
+}
+
+.lds-dual-ring {
+  display: none;
+  position: absolute;
+  right: calc(50% - 40px);
+  bottom: calc(50% - 40px);
+  z-index: 999;
+  width: 80px;
+  height: 80px;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid var(--color-accent);
+  border-color: var(--color-accent) transparent var(--color-accent) transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

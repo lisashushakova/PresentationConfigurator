@@ -6,55 +6,67 @@
     <link href="views/styles/style.css" rel="stylesheet">
     <link href="views/styles/presentation-drawer.css" rel="stylesheet">
     <link href="views/styles/custom-drop-list.css" rel="stylesheet">
+    <link href="views/styles/small-drop-list.css" rel="stylesheet">
+    <link href="views/styles/loading.css" rel="stylesheet">
 </head>
 <body>
-<header>Конфигуратор презентаций</header>
-<div class="slides-sources-modal">
-  <div class='logic-expression'>
-    <input type="text" id="logicalExpressionInput" placeholder="Логическое выражение"/>
-    <button id='findImportBtn'>Найти</button>
+    <header>Конфигуратор презентаций</header>
 
-  </div>
-  <div class="selected-slides-window">
-
-  </div>
-  <div class="actions-buttons-line">
-    <button id="confirmImportBtn">Импорт</button>
-    <button id="cancelImportBtn">Отмена</button>
-  </div>
-
-</div>
-<div class='content-wrapper'>
-    <div class="pres-column">
-        <div id='presDropList' class="custom-drop-list-body">
-            <div class="custom-drop-list-header">
-                <input class="custom-drop-list-input" type="text" placeholder="Название презентации"/>
-                <button id='addPresBtn'>+</button>
+    <div class='content-wrapper'>
+        <div class="pres-column">
+            <div id='folderDropList' class="custom-drop-list-body">
+                <div class="custom-drop-list-header">
+                    <input class="custom-drop-list-input" type="text" placeholder="Поиск"/>
+                </div>
+                <div class="custom-drop-list-content"></div>
             </div>
-            <div class="custom-drop-list-content"></div>
         </div>
-    </div>
-    <div class="main-pres-column">
-        <div class="pres-drawer-header"><button id='importSlidesBtn'>Импорт слайдов</button></div>
-        <div class="pres-drawer"></div>
-    </div>
-    <div class="tools-column">
+        <div class="main-pres-column">
+            <div class="lds-dual-ring"></div>
+            <div class="pres-drawer-header"></div>
+            <div class="import-slides-button">Импорт слайдов</div>
+            <div class="pres-drawer"></div>
+            <div class="slides-sources-modal">
+                <div class='logic-expression'>
+                    <input type="text" id="logicalExpressionInput" placeholder="Логическое выражение"/>
+                </div>
+                <div class="selected-slides-window">
 
+                </div>
+                <div class="dest-route-window">
+                    <div class="slides-text"></div>
+                    <div id='importFolderList' class="small-drop-list-body">
+                        <div class="small-drop-list-header">
+                            <input class="small-drop-list-input" type="text" placeholder="Папка"/>
+                        </div>
+                        <div class="small-drop-list-content"></div>
+                    </div>
+                    <div id='importPresList' class="small-drop-list-body">
+                        <div class="small-drop-list-header">
+                            <input class="small-drop-list-input" type="text" placeholder="Презентация"/>
+                        </div>
+                        <div class="small-drop-list-content"></div>
+                    </div>
+                </div>
+                <div class="actions-buttons-line">
+                    <button id="confirmImportBtn">Импорт</button>
+                    <button id="cancelImportBtn">Отмена</button>
+                </div>
 
-        <div id='slideTagsDropList' class="custom-drop-list-body">
-            <div class="custom-drop-list-header">
-                <input class="custom-drop-list-input" type="text" placeholder="Теги слайда"/>
-                <button id='addTagBtn'>+</button>
-                <button id='delTagBtn'>-</button>
             </div>
-            <div class="custom-drop-list-content"></div>
+        </div>
+        <div class="tools-column">
+            <div id='slideTagsDropList' class="custom-drop-list-body">
+                <div class="custom-drop-list-header">
+                    <input class="custom-drop-list-input" type="text" placeholder="Поиск тегов"/>
+                </div>
+                <div class="custom-drop-list-content"></div>
+            </div>
+
         </div>
 
     </div>
-</div>
-    <script src="views/scripts/custom-drop-list.js"></script>
-    <script src="views/scripts/presentation-drawer.js"></script>
-    <script src="views/scripts/script.js"></script>
+    <script src="views/scripts/script.js" type="module"></script>
 
 </body>
 </html>

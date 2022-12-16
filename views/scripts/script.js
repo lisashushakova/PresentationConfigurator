@@ -1,165 +1,153 @@
-let selectedPres = null
-let selectedSlide = null
+import FolderList from "./folder-list.js";
+import PresentationDrawer from "./presentation-drawer.js";
+import SlideTagsList from "./slide-tags-list.js";
+import SmallDropList from "./small-drop-list.js";
 
-const slideTagsDropList = new customDropList(
-document.querySelector('#slideTagsDropList'),
-console.log
-)
+const slideTagsList = new SlideTagsList(
+    document.querySelector('#slideTagsDropList'),
+    (tag) => {
 
-const presDrawer = new presentationDrawer(
-document.querySelector('.pres-drawer'),
-async (slide) => {
-    selectedSlide = slide
-    slide.tags.forEach(tag => {
-      if (tag.tagValue != null)
-          tag.displayString = `${tag.tagName} (${tag.tagValue})`
-      else
-          tag.displayString = `${tag.tagName}`
     })
-    slideTagsDropList.loadList(slide.tags, 'displayString')
+
+const updateSlideTags = async (slide) => {
+    console.log(slide)
+    const slideTags = await fetch(`http://localhost:8000/links/slide-tags?slide_id=${slide.id}`)
+        .then(res => res.json())
+    slideTagsList.loadList(slide, slideTags, updateSlideTags)
 }
+
+const presDrawer = new PresentationDrawer(
+    document.querySelector('.pres-drawer'),
+    updateSlideTags
 )
 
-const presDropList = new customDropList(
-document.querySelector('#presDropList'),
-async (pres) => {
-    presDrawer.drawerElement.classList.add('loading')
-    selectedSlide = null
-    const slides = await new Promise(r => {
-      google.script.run.withSuccessHandler(r).getPresSlides(pres.presId)
+const folderList = new FolderList(
+    document.querySelector('#folderDropList'),
+    (pres, slides) => {
+        hideSlidesSourcesModal()
+        presDrawer.draw(slides)
+        document.querySelector('.pres-drawer-header').innerHTML = `${pres.name}`
     })
-    selectedPres = pres
-    presDrawer.draw(slides)
-    presDrawer.drawerElement.classList.remove('loading')
-}
+
+const folderPresList = await fetch('http://localhost:8000/presentations/folders-test').then(res => res.json())
+folderList.loadList(folderPresList)
+
+
+
+
+const slidesSourcesModal = document.querySelector('.slides-sources-modal')
+const logicalExpressionInput = slidesSourcesModal.querySelector('#logicalExpressionInput')
+const selectedSlides = slidesSourcesModal.querySelector('.selected-slides-window')
+let selectedSlidesObject = null
+const destRoute = slidesSourcesModal.querySelector('.dest-route-window')
+const confirmImportBtn = slidesSourcesModal.querySelector('#confirmImportBtn')
+const cancelImportBtn = slidesSourcesModal.querySelector('#cancelImportBtn')
+
+
+document.querySelector('.import-slides-button').addEventListener('click', () => {
+    document.querySelector('.pres-drawer-header').style.display = 'none'
+    document.querySelector('.pres-drawer').style.display = 'none'
+    document.querySelector('.import-slides-button').style.display = 'none'
+    slidesSourcesModal.classList.add('visible')
+})
+
+const presImportList = new SmallDropList(
+        document.querySelector('#importPresList'),
+        console.log
+    )
+
+
+const folderImportList = new SmallDropList(
+    document.querySelector('#importFolderList'),
+    (folder) => {
+
+        presImportList.loadList(
+            [
+                ...folder.presentations,
+                {
+                    'name': 'Новая презентация.pptx',
+                }
+            ])
+    }
 )
 
-presDropList.listBodyElement.classList.add('loading')
-const presList = await new Promise(r => {
-google.script.run.withSuccessHandler(r).getUserPresList()
-})
-presDropList.loadList(presList, 'presName')
-presDropList.listBodyElement.classList.remove('loading')
+folderImportList.loadList(folderPresList, 'name')
 
+function hideSlidesSourcesModal() {
+    logicalExpressionInput.value = ''
+    selectedSlides.innerHTML = ''
 
+    document.querySelector('.pres-drawer-header').style.display = 'flex'
+    document.querySelector('.pres-drawer').style.display = 'flex'
+    document.querySelector('.import-slides-button').style.display = 'flex'
 
+    slidesSourcesModal.classList.remove('visible')
 
-
-document.querySelector('#addPresBtn').addEventListener('click', async () => {
-const pres = await new Promise(r => {
-  google.script.run.withSuccessHandler(r).createPres(presDropList.input.value)
-})
-presDropList.loadList([...presDropList.contentList, pres], 'presName')
-})
-
-document.querySelector('#addTagBtn').addEventListener('click', async () => {
-slideTagsDropList.listBodyElement.classList.add('loading')
-let [tagName, tagValue] = slideTagsDropList.input.value.split('=')
-if (!tagValue) tagValue = null
-const link = await new Promise(r => {
-  google.script.run.withSuccessHandler(r).linkSlideWithTag(selectedSlide.slideId, tagName, tagValue)
-})
-
-let displayString
-if (link.value != null)
-  displayString = `${link.tagName} (${link.value})`
-else
-  displayString = `${link.tagName}`
-const tagObject = {'tagId': link.tagId, 'tagName': link.tagName, 'tagValue': link.value, 'displayString': displayString}
-slideTagsDropList.loadList([...slideTagsDropList.contentList, tagObject], 'displayString')
-for (const slide of presDrawer.slides) {
-  if (slide.slideId == link.slideId) {
-    console.log(slide, link)
-    slide.tags.push(tagObject)
-    break
-  }
 
 }
 
-slideTagsDropList.listBodyElement.classList.remove('loading')
-
+cancelImportBtn.addEventListener('click', () => {
+    hideSlidesSourcesModal()
 })
 
-
-document.querySelector('#delTagBtn').addEventListener('click', async () => {
-slideTagsDropList.listBodyElement.classList.add('loading')
-const tagName = slideTagsDropList.input.value
-const pres = await new Promise(r => {
-  google.script.run.withSuccessHandler(r).unlinkSlideFromTag(selectedSlide.slideId, tagName)
+confirmImportBtn.addEventListener('click', async () => {
+    selectedSlidesObject.forEach((element, index) => {
+        selectedSlidesObject[index] = {
+            id: element.id,
+            slides: element.slides.map(slide => slide.index)
+        }
+    })
+    const loadingElement = document.createElement('div')
+    loadingElement.classList.add('lds-dual-ring')
+    document.querySelector('.pres-drawer').appendChild(loadingElement)
+    document.querySelector('.lds-dual-ring').style.display = 'inline-block'
+    await fetch('http://localhost:8000/presentations/build', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: presImportList.input.value,
+            id: presImportList.selectedElement.id,
+            body: selectedSlidesObject})
+    })
+    hideSlidesSourcesModal()
+    const folderPresList = await fetch('http://localhost:8000/presentations/folders-test').then(res => res.json())
+    folderList.loadList(folderPresList)
+    presDrawer.drawerElement.innerHTML = ''
+    document.querySelector('.lds-dual-ring').style.display = 'none'
 })
-console.log("1:", presDrawer.slides)
-for (const [i, slide] of Object.entries(presDrawer.slides)) {
-  if (slide.slideId == selectedSlide.slideId) {
-    for (const [j, tag] of Object.entries(slide.tags)) {
-      if (tag.tagName == tagName) {
-        presDrawer.slides[i].tags.splice(j, 1)
-      }
+
+logicalExpressionInput.addEventListener('input', async () => {
+
+    selectedSlidesObject = await fetch(
+        `http://localhost:8000/presentations/slides-by-query?query=${logicalExpressionInput.value}`
+    ).then(res => res.json())
+
+    selectedSlides.innerHTML = ''
+    let slidesCount = 0
+    for (const pres of selectedSlidesObject) {
+        const presBox = document.createElement('div')
+        presBox.classList.add('presBox')
+
+        const presBoxHeader = document.createElement('div')
+        presBoxHeader.classList.add('presBoxHeader')
+        presBoxHeader.innerHTML = `Презентация: "${pres.name}"`
+        presBox.appendChild(presBoxHeader)
+
+        const presBoxContent = document.createElement('div')
+        presBoxContent.classList.add('presBoxContent')
+        presBox.appendChild(presBoxContent)
+
+        for (const slide of pres.slides) {
+            const img = document.createElement('img')
+            img.src = 'data:image/png;base64,' + slide.thumbnail
+            img.classList.add('slidesImportImage')
+            presBoxContent.appendChild(img)
+            slidesCount++
+        }
+        selectedSlides.appendChild(presBox)
     }
-  }
-}
-
-slideTagsDropList.loadList(slideTagsDropList.contentList)
-console.log("2:", presDrawer.slides)
-const listHtmlElement = slideTagsDropList.listBodyElement
-const listContentHtml = listHtmlElement.querySelector('.custom-drop-list-content')
-for (const child of listContentHtml.children) {
-  if (child.innerHTML == 'undefined') child.remove()
-}
-slideTagsDropList.listBodyElement.classList.remove('loading')
-})
-
-document.querySelector('#importSlidesBtn').addEventListener('click', () => {
-const modal = document.querySelector('.slides-sources-modal')
-modal.classList.add('visible')
-})
-
-let selectedSlides
-
-document.querySelector('#findImportBtn').addEventListener('click', async () => {
-const selectedSlidesWindow = document.querySelector(".selected-slides-window")
-selectedSlidesWindow.classList.add('loading')
-const input = document.querySelector("#logicalExpressionInput")
-selectedSlides = await new Promise(r => {
-  google.script.run.withSuccessHandler(r).logicalExpression(input.value)
-})
-
-selectedSlidesWindow.innerHTML = ''
-for (const slide of selectedSlides) {
-  for (const pres of presList) {
-    if (pres.presId == slide.parentPresId) {
-      selectedSlidesWindow.innerHTML += `Презентация "${pres.presName}" слайд ${slide.index}`
-    }
-  }
-}
-selectedSlidesWindow.classList.remove('loading')
-})
-
-document.querySelector('#confirmImportBtn').addEventListener('click', async () => {
-const selectedSlidesWindow = document.querySelector(".selected-slides-window")
-selectedSlidesWindow.classList.add('loading')
-await new Promise(r => {
-
-  google.script.run.withSuccessHandler(r).appendSlides(selectedPres.presId, selectedSlides)
-})
-const modal = document.querySelector('.slides-sources-modal')
-modal.classList.remove('visible')
-selectedSlidesWindow.classList.remove('loading')
-presDropList.listBodyElement.classList.add('loading')
-const presList = await new Promise(r => {
-  google.script.run.withSuccessHandler(r).getUserPresList()
-})
-presDropList.loadList(presList, 'presName')
-presDropList.listBodyElement.classList.remove('loading')
-presDrawer.draw([...presDrawer.slides, ...selectedSlides])
+    destRoute.querySelector('.slides-text').innerHTML = `Слайды (${slidesCount}) →`
 
 })
-
-document.querySelector('#cancelImportBtn').addEventListener('click', async () => {
-const modal = document.querySelector('.slides-sources-modal')
-modal.classList.remove('visible')
-})
-
-
-
-
-

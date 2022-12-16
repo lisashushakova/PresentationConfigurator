@@ -1,4 +1,4 @@
-class customDropList {
+export default class CustomDropList {
     constructor(listBodyElement, func) {
         this.listBodyElement = listBodyElement
         this.input = this.listBodyElement.querySelector('.custom-drop-list-input')
@@ -21,17 +21,15 @@ class customDropList {
         this.content.innerHTML = ''
         this.contentList = contentList
         for (const contentElement of this.contentList) {
-            const listItem = document.createElement('div')
-            listItem.classList.add('custom-drop-list-item')
-            listItem.innerHTML = contentElement[showProperty]
-            listItem.addEventListener('click', () => {
+            contentElement.classList.add('custom-drop-list-item')
+            contentElement.addEventListener('click', () => {
                 if (this.selectedElement) this.selectedElement.classList.remove('selected')
-                this.selectedElement = listItem
+                this.selectedElement = contentElement
                 this.selectedElement.classList.add('selected')
                 this.input.value = contentElement[showProperty]
                 this.func(contentElement)
             })
-            this.content.appendChild(listItem)
+            this.content.appendChild(contentElement)
         }
     }
   }

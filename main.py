@@ -5,6 +5,7 @@ import json
 import os
 import re
 from datetime import datetime
+from itertools import groupby
 from typing import List
 
 import fastapi
@@ -15,6 +16,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 from pptx import Presentation
+from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, Response, HTMLResponse
@@ -46,17 +48,14 @@ db_handler = DatabaseHandler()
 current_user_id = None
 
 flow = Flow.from_client_secrets_file(
-        'auth/oauth2.keys.json',
-        scopes=['openid',
-                'https://www.googleapis.com/auth/userinfo.email',
-                'https://www.googleapis.com/auth/userinfo.profile',
-                'https://www.googleapis.com/auth/drive',
-                'https://www.googleapis.com/auth/presentations'],
-        redirect_uri="http://localhost:8000/auth/sessions"
-    )
-
-
-
+    'auth/oauth2.keys.json',
+    scopes=['openid',
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/drive',
+            'https://www.googleapis.com/auth/presentations'],
+    redirect_uri="http://localhost:8000/auth/sessions"
+)
 
 
 @app.get('/')
@@ -90,6 +89,7 @@ def sessions(code):
             refresh_token=credentials.refresh_token,
         ))
         session.commit()
+    return RedirectResponse(url='http://localhost:8000/')
 
 
 @app.get('/presentations/folders')
@@ -100,6 +100,40 @@ def pres_folders():
         "and trashed = false"
     response = drive.files().list(q=q).execute()
     return response.get('files')
+
+
+@app.get('/presentations/folders-test')
+def pres_folders_test():
+    credentials = flow.credentials
+    drive = build('drive', 'v3', credentials=credentials)
+    q = "mimeType='application/vnd.openxmlformats-officedocument.presentationml.presentation' " \
+        "and trashed = false and 'me' in owners"
+    response = drive.files().list(q=q, fields='files(id, name, modifiedTime, parents)').execute()
+    folder_pres_list = []
+    for pres in response.get('files'):
+        folder_id = pres.get('parents')[0]
+        folder_in_list = next((folder for folder in folder_pres_list if folder['id'] == folder_id), None)
+        if folder_in_list is None:
+            folder_pres_list.append({'id': folder_id, 'name': None, 'presentations': []})
+            folder_in_list = next((folder for folder in folder_pres_list if folder['id'] == folder_id), None)
+        folder_in_list['presentations'].append(pres)
+
+    session = db_handler.Session()
+    for folder in folder_pres_list:
+        file = drive.files().get(fileId=folder.get('id'), fields='name').execute()
+        folder['name'] = file.get('name')
+
+        session.query(Presentations).filter(
+            Presentations.folder_id == folder.get('id'),
+            ~Presentations.id.in_([x['id'] for x in folder.get('presentations')])).delete()
+        session.commit()
+
+    session.query(Presentations).filter(
+        Presentations.owner_id == current_user_id,
+        ~Presentations.folder_id.in_([x['id'] for x in folder_pres_list])).delete()
+    session.commit()
+
+    return folder_pres_list
 
 
 @app.get('/presentations/list')
@@ -142,9 +176,9 @@ def get_slides_by_query(query):
     tag_names = re.findall('[a-z]+[a-z0-9]*', query)
     tag_names = list(filter(lambda x: x not in ['and', 'or', 'not'], tag_names))
     session = db_handler.Session()
-    links_and_tags = session.query(Links, Tags)\
-        .filter(Tags.name.in_(tag_names), Tags.owner_id == current_user_id)\
-        .filter(Links.tag_id == Tags.id)\
+    links_and_tags = session.query(Links, Tags) \
+        .filter(Tags.name.in_(tag_names), Tags.owner_id == current_user_id) \
+        .filter(Links.tag_id == Tags.id) \
         .all()
     slides_tags_values = dict()
     for [link, tag] in links_and_tags:
@@ -167,7 +201,23 @@ def get_slides_by_query(query):
         'pres_id': x.pres_id,
         'index': x.index,
         'thumbnail': base64.b64encode(x.thumbnail).decode()}, result))
-    return result
+
+    sortedResult = sorted(result, key=lambda x: x['pres_id'])
+    groupedResult = [
+        {"id": key, "name": None, "slides": list(value)} for key, value in
+        groupby(sortedResult, lambda x: x.get('pres_id'))]
+    for pres in groupedResult:
+        name = session.query(Presentations).get(pres.get('id')).name
+        pres['name'] = name
+
+    return groupedResult
+
+
+class JSONPresentation(BaseModel):
+    id: str
+    name: str
+    parents: List[str]
+    modifiedTime: str
 
 
 @app.post('/presentations/build')
@@ -175,7 +225,12 @@ def build_presentation(new_pres_info: dict):
     clear_temp()
 
     name = new_pres_info.get('name')
+    pres_id = new_pres_info.get('id')
     build_from = new_pres_info.get('body')
+    if pres_id:
+        session = db_handler.Session()
+        own_slides = session.query(Slides).filter(Slides.pres_id == pres_id).all()
+        build_from = [{'id': pres_id, 'slides': list(range(len(own_slides)))}] + build_from
     for pres in build_from:
         download_pres(pres.get('id'), f'{pres.get("id")}.pptx')
     with slides.Presentation() as presentation:
@@ -187,22 +242,32 @@ def build_presentation(new_pres_info: dict):
                     mgr = presentation_from.slides[slide_index].notes_slide_manager
                     mgr.remove_notes_slide()
                     presentation.slides.add_clone(presentation_from.slides[slide_index])
-        presentation.save(f"presentations/{name}.pptx", slides.export.SaveFormat.PPTX)
-    utils.clear_watermark(f"presentations/{name}.pptx")
+        presentation.save(f"presentations/{name}", slides.export.SaveFormat.PPTX)
+    utils.clear_watermark(f"presentations/{name}")
 
     credentials = flow.credentials
     drive = build('drive', 'v3', credentials=credentials)
     file_metadata = {
         'name': name
     }
-    media = MediaFileUpload(f"presentations/{name}.pptx",
-                            mimetype='application/vnd.openxmlformats-officedocument.presentationml.presentation')
-    file = drive.files().create(
-        body=file_metadata,
-        media_body=media,
-        fields='id, name, modifiedTime, parents').execute()
 
-    update_presentations(file.get('parents')[0], [file], download=False)
+    if pres_id:
+        file = upload_pres(pres_id, name, silent=True)
+        file = {
+            "id": file.get('id'),
+            "name": file.get('originalFilename'),
+            "modifiedTime": file.get('modifiedDate'),
+            "parents": [file.get('parents')[0].get('id')]
+        }
+    else:
+        media = MediaFileUpload(f"presentations/{name}",
+                                mimetype='application/vnd.openxmlformats-officedocument.presentationml.presentation')
+        file = drive.files().create(
+            body=file_metadata,
+            media_body=media,
+            fields='id, name, modifiedTime, parents').execute()
+
+    update_presentation(JSONPresentation.parse_obj(file))
 
     session = db_handler.Session()
     migrate_links = {}
@@ -260,7 +325,7 @@ def remove_link(slide_id, tag_name):
     tag = session.query(Tags).filter(Tags.name == tag_name and Tags.owner_id == current_user_id).first()
     if tag is None:
         return "Tag does not exists"
-    link = session.query(Links).filter(Links.slide_id == slide_id and Links.tag_id == tag.id).first()
+    link = session.query(Links).filter(Links.slide_id == slide_id, Links.tag_id == tag.id).first()
     if link is None:
         return "Link does not exists"
     session.delete(link)
@@ -297,7 +362,7 @@ def download_pres(pres_id, name='temp'):
         f.write(file.getvalue())
 
 
-def upload_pres(pres_id, name):
+def upload_pres(pres_id, name, silent=False):
     credentials = flow.credentials
     drive = build('drive', 'v2', credentials=credentials)
 
@@ -312,13 +377,48 @@ def upload_pres(pres_id, name):
     file = drive.files().update(
         fileId=pres_id,
         body=file,
-        media_body=media_body
+        media_body=media_body,
     ).execute()
 
+    if not silent:
+        session = db_handler.Session()
+        session.query(Presentations) \
+            .filter(Presentations.id == file['id']) \
+            .update({'modified_time': file['modifiedDate']})
+        session.commit()
+    return file
+
+
+@app.post('/presentations/get')
+def update_presentation(pres: JSONPresentation):
     session = db_handler.Session()
-    session.query(Presentations)\
-        .filter(Presentations.id == file['id'])\
-        .update({'modified_time': file['modifiedDate']})
+
+    found_in_db = session.query(Presentations).get(pres.id)
+    if found_in_db is None:
+        session.add(Presentations(
+            id=pres.id,
+            name=pres.name,
+            owner_id=current_user_id,
+            folder_id=pres.parents[0],
+            modified_time=pres.modifiedTime
+        ))
+        session.commit()
+        update_slides(pres.id, pres.name)
+    elif found_in_db.modified_time < datetime.strptime(pres.modifiedTime, '%Y-%m-%dT%H:%M:%S.%fZ'):
+        found_in_db.name = pres.name
+        found_in_db.modified_time = pres.modifiedTime
+        session.commit()
+        update_slides(pres.id, pres.name)
+    slides = get_pres_slides(pres.id)
+    return slides
+
+
+@app.post('/presentations/remove-old')
+def remove_old_presentations(folder):
+    session = db_handler.Session()
+    session.query(Presentations).filter(
+        Presentations.folder_id == folder.get('id'),
+        ~Presentations.id.in_([x['id'] for x in folder.get('presentations')])).delete()
     session.commit()
 
 
@@ -336,7 +436,7 @@ def update_presentations(folder_id, files, download=True):
                 modified_time=pres.get('modifiedTime')
             ))
             session.commit()
-            update_slides(pres.get('id'), pres.get('name'))
+            update_slides(pres.get('id'), pres.get('name'), download)
         elif found_in_db.modified_time < datetime.strptime(pres.get('modifiedTime'), '%Y-%m-%dT%H:%M:%S.%fZ'):
             found_in_db.name = pres.get('name')
             found_in_db.modified_time = pres.get('modifiedTime')

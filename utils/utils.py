@@ -4,6 +4,7 @@ import pythoncom
 from pptx import Presentation
 import win32com.client
 
+
 def clear_watermark(path):
     pres = Presentation(path)
     slides = [slide for slide in pres.slides]
@@ -42,5 +43,7 @@ def extract_images(name):
     for num in range(slides_num):
         img_path = Path(f'presentations/images/img_{num}.png').resolve()
         pres.Slides[num].Export(img_path, "PNG")
+    pres.Close()
     Application.Quit()
+
     return slides_num
