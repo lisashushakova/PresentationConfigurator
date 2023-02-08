@@ -1,0 +1,129 @@
+:root {
+      --body-size-width: 350px;
+      --body-size-height: 800px;
+      --input-size-width: 350px;
+      --input-size-height: 35px;
+      --content-size-width: 350px;
+      --content-size-height: 650px;
+      font-family: 'Helvetica', 'Arial', sans-serif;
+      font-size: 12pt;
+}
+
+input {
+    all: unset;
+}
+
+.pres-builder {
+    display: flex;
+    flex-direction: column;
+
+    width: var(--body-size-width);
+    height: calc(100% - 65px);
+
+    box-sizing: border-box;
+
+    gap: 20px
+}
+
+.pres-builder-header {
+    width: var(--input-size-width);
+
+    flex-direction: row;
+    background: var(--color-accent);
+    color: whitesmoke;
+
+    box-sizing: border-box;
+    padding-right: 15px;
+}
+
+.pres-builder-name-field {
+    width: 100%;
+    height: var(--input-size-height);
+
+    box-sizing: border-box;
+    padding-left: 15px;
+
+}
+
+.pres-builder-name-field::placeholder {
+    color: whitesmoke;
+}
+
+.pres-builder-body {
+    display: flex;
+    flex-direction: column;
+
+
+    width: 100%;
+    height: 100%;
+
+    justify-content: start;
+    align-items: center;
+
+    overflow-y: auto;
+
+}
+
+.pres-builder-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.pres-builder-drag-spot {
+    box-sizing: border-box;
+    padding: 20px;
+    width: 100%;
+    height: 10px;
+}
+
+.pres-builder-drag-spot:-moz-drag-over {
+    background-color: var(--color-accent-transparent);
+}
+
+.pres-builder-body img {
+    width: 300px;
+}
+
+.pres-builder-build-complete {
+    color: var(--color-accent);
+    font-size: 16pt;
+    margin: auto
+}
+
+.pres-builder-footer {
+    width: 100%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+
+.pres-builder-build-btn, .pres-builder-download-btn, .pres-builder-skip-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    box-sizing: border-box;
+    padding: 5px 10px 5px 10px;
+    background-color: var(--color-accent);
+    font-size: 14pt;
+}
+
+.pres-builder-download-btn {
+    background-color: forestgreen;
+}
+
+.pres-builder-download-btn, .pres-builder-skip-btn {
+    width: 120px;
+}
+
+.build-wait {
+    animation: 1s build-wait-animation alternate infinite;
+}
+
+@keyframes build-wait-animation {
+    from {background-color: var(--color-accent)}
+    to {background-color: #4e4e4e
+    }
+}

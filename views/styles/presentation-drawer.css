@@ -1,9 +1,0 @@
-.presentation-drawer-image {
-    box-sizing: border-box;
-    border: 2px solid lightgray;
-    border-radius: 5px;
-}
-
-.selected.presentation-drawer-image {
-    border: 2px solid red;
-}

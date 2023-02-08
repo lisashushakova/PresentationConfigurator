@@ -12,6 +12,8 @@ services:
       - "5000:5432"
     volumes:
       - db:/var/lib/postgresql/data
+
+
 volumes:
   db:
     driver: local

@@ -1,0 +1,151 @@
+*, input::placeholder {
+    color: whitesmoke;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 10pt;
+}
+
+.pres-drawer {
+    display: flex;
+    flex-direction: column;;
+    gap: 30px;
+    padding: 30px 15px 30px 15px;
+}
+
+.pres-drawer-not-found {
+    color: var(--color-accent);
+    font-size: 20pt;
+    margin: auto
+}
+
+.pres-drawer-card {
+    display: flex;
+    flex-direction: column;
+
+    box-sizing: border-box;
+    border: 2px solid lightgray;
+    border-radius: 5px;
+
+    user-select: none;
+}
+
+.pres-drawer-card-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    height: 100%;
+
+    box-sizing: border-box;
+    border: 1px solid var(--color-accent);
+    padding: 5px 0 5px 0;
+
+    color: var(--color-accent);
+    font-size: 16pt;
+
+}
+
+.pres-drawer-card-body {
+    display: flex;
+    flex-direction: row;
+}
+
+
+.selected.pres-drawer-card {
+    border: 2px solid red;
+}
+
+.pres-drawer-image {
+    width: 100%;
+    -webkit-user-drag: none;
+}
+
+.pres-drawer-tag-footer-curtain {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 100%;
+    width: 30px;
+
+    margin-left: -280px;
+
+    background-color: var(--color-accent-transparent);
+
+    box-sizing: border-box;
+    border-left: 1px solid var(--color-accent);
+    border-right: 1px solid var(--color-accent);
+
+}
+
+.pres-drawer-tag-footer-curtain-label {
+    transform: rotate(-90deg);
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14pt;
+}
+
+.closed.pres-drawer-tag-footer-curtain {
+    margin-left: -30px;
+}
+
+.closed.pres-drawer-tag-footer {
+    display: none;
+}
+
+.pres-drawer-tag-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    height: 100%;
+    width: 250px;
+
+    box-sizing: border-box;
+    padding: 20px;
+
+    background-color: var(--color-accent);
+}
+
+.pres-drawer-add-tag-label,
+.pres-drawer-tag-label {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 5px;
+
+    height: 30px;
+    width: 100%;
+
+    box-sizing: border-box;
+    border: 2px solid whitesmoke;
+    padding: 0 10px 0 10px;
+
+
+    text-align:center;
+}
+
+
+
+.pres-drawer-add-tag-name,
+.pres-drawer-add-tag-value,
+.pres-drawer-tag-name,
+.pres-drawer-tag-value {
+    align-items: center;
+    justify-content: center;
+
+    width: 60px;
+}
+
+.pres-drawer-add-tag-name:focus::placeholder,
+.pres-drawer-add-tag-value:focus::placeholder {
+    color:transparent;
+}
+
+.pres-drawer-add-tag-btn, .pres-drawer-remove-tag-btn {
+    padding: 0 5px 0 5px;
+    align-items: center;
+    justify-self: center;
+}
+
+
+

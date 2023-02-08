@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Presentation Configurator</title>
+    <link href="views/styles/style.css" rel="stylesheet">
+    <link href="views/styles/presentation-drawer.css" rel="stylesheet">
+    <link href="views/styles/files-tree-list.css" rel="stylesheet">
+    <link href="views/styles/pres-column.css" rel="stylesheet">
+    <link href="views/styles/main-pres-column.css" rel="stylesheet">
+    <link href="views/styles/pres-builder.css" rel="stylesheet">
+    <link href="views/styles/builder-column.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        Конфигуратор презентаций
+        <div class="logout-box">
+            <img id="user-icon-img">
+            <div id="user-name-box"></div>
+            <div id="logout-btn">
+                <img src="views/icons/logout.svg">
+            </div>
+        </div>
+
+    </header>
+
+    <div class='content-wrapper'>
+        <div class="pres-column">
+            <div class="pres-column-header">Презентации</div>
+            <div id='filesTreeList' class="ftl-container">
+                <div class="ftl-header">
+                    <input class="ftl-search-field" type="text" placeholder="Поиск"/>
+                    <div id="ftl-refresh-btn"><img src="views/icons/refresh.svg"></div>
+                </div>
+                <div class="ftl-body"></div>
+            </div>
+        </div>
+        <div class="main-pres-column">
+            <div class="main-pres-column-body">
+                <div class="main-pres-column-header">Название презентации</div>
+                <div class="pres-drawer-header">
+                    <input class="pres-drawer-search-field" type="text" placeholder="Поиск"/>
+                    <div id="pres-drawer-tag-search-btn"><img src="views/icons/tag-search-dark.svg"></div>
+                    <div id="pres-drawer-text-search-btn"><img src="views/icons/text-search-dark.svg"></div>
+
+                </div>
+                <div class="pres-drawer"></div>
+            </div>
+            <div class="main-pres-column-toolbar">
+                <div id="export-all-slides-btn"><img src="/views/icons/export-all.svg"></div>
+                <div id="export-selected-slides-btn"><img src="/views/icons/export-selected.svg"></div>
+            </div>
+
+        </div>
+        <div class="builder-column">
+            <div class="builder-column-header">Сборка презентации</div>
+            <div class="pres-builder">
+                <div class="pres-builder-header"></div>
+                <div class="pres-builder-body"></div>
+                <div class="pres-builder-footer"></div>
+            </div>
+        </div>
+
+    </div>
+    <script src="views/scripts/script.js" type="module"></script>
+
+</body>
+</html>
+
+
+
+
+
+
+
