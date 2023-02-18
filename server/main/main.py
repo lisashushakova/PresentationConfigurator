@@ -8,6 +8,7 @@ from datetime import datetime
 from multiprocessing.pool import ThreadPool
 
 import fastapi
+import requests
 import uvicorn as uvicorn
 import win32com.client
 from aspose import slides
@@ -260,7 +261,7 @@ def pres_list_delta(new_pres_list, old_pres_list):
 def pres_sync_created(user_state, application, pres, loaded=False):
     user_id, user_flow = user_session[user_state]
     if not loaded: download_pres(user_state, pres)
-    number_of_slides = utils.extract_images(application, pres.get('id'))
+    number_of_slides, slide_ratios = utils.extract_images(application, pres.get('id'))
     pres_text = utils.extract_text(pres.get('id'))
 
     db_handler.create(
@@ -275,12 +276,14 @@ def pres_sync_created(user_state, application, pres, loaded=False):
     for i in range(number_of_slides):
         with open(os.path.join(SROOT, f'presentations/temp/{pres.get("id")}/images/Слайд{i + 1}.png'), "rb") as image:
             img_bytes = image.read()
+
             db_handler.create(
                 Slides,
                 pres_id=pres.get('id'),
                 index=i,
                 thumbnail=img_bytes,
-                text=pres_text[i]
+                text=pres_text[i],
+                ratio=slide_ratios[i]
             )
 
     utils.clear_temp(pres)

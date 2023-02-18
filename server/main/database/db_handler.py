@@ -38,6 +38,7 @@ class Slides(Base):
     index = Column('index', Integer, nullable=False)
     thumbnail = Column('thumbnail', LargeBinary, nullable=False)
     text = Column('text', String, nullable=False)
+    ratio = Column('ratio', Integer, nullable=True)
 
     parent_pres = relationship('Presentations', backref='slides', cascade='all, delete')
     child_links = relationship('Links', backref='slides', cascade='delete', passive_deletes=True)
@@ -48,7 +49,8 @@ class Slides(Base):
             'pres_id': self.pres_id,
             'index': self.index,
             'thumbnail': base64.b64encode(self.thumbnail),
-            'text': self.text
+            'text': self.text,
+            'ratio': self.ratio
         }
 
 class Tags(Base):
@@ -168,7 +170,7 @@ class DatabaseHandler:
         stmt = select(Slides.__table__).join(Presentations)\
             .where(
                 Presentations.owner_id == user_id,
-                Slides.text.like(f'%{search_phrase}%'))
+                Slides.text.like(f'%{search_phrase.lower()}%'))
         slides = session.execute(stmt).all()
         session.close()
         return slides
@@ -209,5 +211,5 @@ class DatabaseHandler:
             session.close()
             return None
 
-db_handler = DatabaseHandler()
+db_handler = DatabaseHandler()ыs
 db_handler.create_db()

@@ -16,7 +16,7 @@ const userNameBox = document.querySelector('#user-name-box')
 userNameBox.innerHTML = user_name
 
 const logoutBtn = document.querySelector('#logout-btn')
-logoutBtn.addEventListener('click', () => {
+logoutBtn.addEventListener('click', async () => {
     location.href = route + 'auth/login'
 })
 

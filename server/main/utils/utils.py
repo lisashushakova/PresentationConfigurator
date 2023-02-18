@@ -45,10 +45,23 @@ def extract_images(application, name):
     img_path = os.path.join(SROOT, f'presentations/temp/{name}/images')
     pres = application.Presentations.Open(pres_path, WithWindow=False)
     slides_num = len(pres.Slides)
+
+    ratios = []
+    for i in range(slides_num):
+        slide = pres.Slides[i]
+        slide_ratio = (slide.CustomLayout.Width / slide.CustomLayout.Height)
+        if slide_ratio / (4 / 3) == 0:
+            ratios.append(0)
+        elif slide_ratio / (16 / 9) == 0:
+            ratios.append(1)
+        else:
+            ratios.append(None)
+
     pres.Export(img_path, 'png')
+
     pres.Close()
     pres = None
-    return slides_num
+    return slides_num, ratios
 
 
 def extract_text(name):
@@ -60,7 +73,7 @@ def extract_text(name):
         for shape in slide.shapes:
             if hasattr(shape, "text"):
                 text_buffer += shape.text
-        slides_text.append(text_buffer)
+        slides_text.append(text_buffer.lower())
     return slides_text
 
 
@@ -68,7 +81,7 @@ def clear_temp(pres):
     shutil.rmtree(os.path.join(SROOT, f'presentations/temp/{pres.get("id")}'))
 
 
-def img_eq(db_thumbnail, upd_thumbnail, threshold=0.1):
+def img_eq(db_thumbnail, upd_thumbnail, threshold=0):
     np_arr_db = np.frombuffer(db_thumbnail, np.uint8)
     img_db = cv2.imdecode(np_arr_db, cv2.IMREAD_COLOR)
     np_arr_upd = np.frombuffer(upd_thumbnail, np.uint8)

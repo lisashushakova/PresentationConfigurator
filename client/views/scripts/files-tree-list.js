@@ -127,6 +127,7 @@ export default class FilesTreeList {
         } else {
             childHTML.classList.add('ftl-folder')
             childHTML.visible = true
+
             childHTML.addEventListener('click', (e) => {
                 childHTML.visible = !childHTML.visible
                 for (const childChild of childHTML.children) {

@@ -9,6 +9,7 @@ export default class PresentationDrawer {
     async draw(drawerElement, slides) {
         drawerElement.innerHTML = ''
         this.slides = slides
+        this.selectedSlides = []
         if (slides != null) {
             if (slides.length === 0) {
                 const slidesNotFoundPanel = document.createElement('div')
@@ -22,7 +23,9 @@ export default class PresentationDrawer {
                 drawerElement.appendChild(card)
                 card.slide = slide
                 card.index = index
+                card.tagNames = []
                 card.selected = false
+
 
                 if (slide.pres_name != null) {
                     const cardHeader = document.createElement('div')
@@ -70,6 +73,12 @@ export default class PresentationDrawer {
                     }
                 })
 
+                const slideTags = await fetch(route + 'links/slide-tags?' + new URLSearchParams({
+                    slide_id: card.slide.id
+                })).then(res => res.json())
+
+                tagFooter.tags = slideTags.map(tag => tag.name)
+
                 const addTagLabel = document.createElement('div')
                 addTagLabel.classList.add('pres-drawer-add-tag-label')
                 tagFooter.appendChild(addTagLabel)
@@ -79,7 +88,6 @@ export default class PresentationDrawer {
                 addTagLabel.appendChild(addTagName)
                 addTagName.type = 'text'
                 addTagName.placeholder = 'Имя тега'
-
 
                 const addTagValue = document.createElement('input')
                 addTagValue.classList.add('pres-drawer-add-tag-value')
@@ -94,21 +102,39 @@ export default class PresentationDrawer {
 
 
                 addTagBtn.addEventListener('click', async () => {
-                    await fetch(route + 'links/create?' + new URLSearchParams({
-                        slide_id: card.slide.id,
-                        tag_name: addTagName.value,
-                        value: addTagValue.value
-                    }), {
-                        method: 'POST'
-                    })
-                    createTagLabel(card, tagFooter, addTagName.value, addTagValue.value)
-                    addTagName.value = ''
-                    addTagValue.value = ''
+                    if (addTagName.value !== '' && /^[0-9]*$/.test(addTagValue.value)) {
+                        const query = {
+                            slide_id: card.slide.id,
+                            tag_name: addTagName.value
+                        }
+                        if (addTagValue.value !== '') {
+                            query.value = addTagValue.value
+                        }
+                        await fetch(route + 'links/create?' + new URLSearchParams(query), {
+                            method: 'POST'
+                        })
+
+                        if (tagFooter.tags.includes(addTagName.value)) {
+                            const tagLabels = document.querySelectorAll('.pres-drawer-tag-label')
+                            for (const tagLabel of tagLabels) {
+                                const tagName = tagLabel.querySelector('.pres-drawer-tag-name')
+                                if (tagName.innerHTML === addTagName.value) {
+                                    const tagValue = tagLabel.querySelector('.pres-drawer-tag-value')
+                                    tagValue.value = addTagValue.value
+                                }
+                            }
+                        } else {
+                            tagFooter.tags.push(addTagName.value)
+                            createTagLabel(card, tagFooter, addTagName.value, addTagValue.value)
+                        }
+
+
+                        addTagName.value = ''
+                        addTagValue.value = ''
+                    }
+
                 })
 
-                const slideTags = await fetch(route + 'links/slide-tags?' + new URLSearchParams({
-                    slide_id: card.slide.id
-                })).then(res => res.json())
 
                 for (const tag of slideTags) {
                     createTagLabel(card, tagFooter, tag.name, tag.value)
@@ -148,13 +174,21 @@ const createTagLabel = (card, tagFooter, name, value) => {
     tagValue.value = value
 
     tagValue.addEventListener('change', async () => {
-        await fetch(route + 'links/create?' + new URLSearchParams({
-            slide_id: card.slide.id,
-            tag_name: name,
-            value: tagValue.value
-        }), {
-            method: 'POST'
-        })
+        if (/^[0-9]*$/.test(tagValue.value)) {
+            const query = {
+                slide_id: card.slide.id,
+                tag_name: tagName.value
+            }
+            if (tagValue.value !== '') {
+                query.value = tagValue.value
+            }
+            await fetch(route + 'links/create?' + new URLSearchParams(query), {
+                method: 'POST'
+            })
+        } else {
+            tagValue.value = value
+        }
+
     })
 
     const removeTagBtn = document.createElement('div')
@@ -168,6 +202,7 @@ const createTagLabel = (card, tagFooter, name, value) => {
         }), {
             method: 'POST'
         })
+        tagFooter.tags = tagFooter.tags.map(tagName => tagName !== name)
         tagLabel.remove()
     })
 }

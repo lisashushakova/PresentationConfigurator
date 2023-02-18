@@ -40,9 +40,11 @@ export default class PresBuilder {
                 a.download = this.lastBuild.name
                 a.click()
                 window.URL.revokeObjectURL(blobURL)
+
+                skipBtn.click()
             })
 
-             const skipBtn = document.createElement('div')
+            const skipBtn = document.createElement('div')
             skipBtn.classList.add('pres-builder-skip-btn')
             this.footer.appendChild(skipBtn)
 
@@ -101,13 +103,17 @@ export default class PresBuilder {
         buildBtn.classList.add('pres-builder-build-btn')
         buildBtn.addEventListener('click', async () => {
             buildBtn.classList.add('build-wait')
+            let name = nameField.value
+            if (name === '') {
+                name = 'New Presentation'
+            }
             this.lastBuild = await fetch(route + 'presentations/build', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    name: nameField.value,
+                    name: name,
                     build_from: this.slideBuffer
                 })
             }).then(res => res.json())
