@@ -85,6 +85,10 @@
     justify-content: center;
 }
 
+.pres-drawer-slide-ratio-btn {
+    color: whitesmoke;
+}
+
 .pres-drawer-header img {
     height: 30px;
 }

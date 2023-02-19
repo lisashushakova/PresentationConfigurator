@@ -379,7 +379,8 @@ def pres_sync_uploaded(user_state, pres, pres_text, pres_thumbs, slides_from):
             pres_id=pres.get('id'),
             index=i,
             thumbnail=thumb,
-            text=text
+            text=text,
+            ratio=slides_from[i].ratio
         )
         migrate_tags(slides_from[i], slide)
 
@@ -392,18 +393,20 @@ def get_pres_slides(pres_id, pres_conf_user_state: str = Cookie(default=None)):
 
 
 @app.get('/slides/by-text')
-def get_slides_by_text(search_phrase, pres_conf_user_state: str = Cookie(default=None)):
+def get_slides_by_text(search_phrase, ratio, pres_conf_user_state: str = Cookie(default=None)):
     user_id, user_flow = user_session[pres_conf_user_state]
     slides_found = [slide for slide in db_handler.get_slides_by_text(user_id, search_phrase)]
     result = []
     for slide in slides_found:
         pres = db_handler.read(Presentations, slide.pres_id)
         result.append({**Slides(**slide).json(), 'pres_name': pres.name})
+    if int(ratio) >= 0:
+        result = [slide for slide in result if slide.get('ratio') == int(ratio)]
     return result
 
 
 @app.get('/slides/by-tag-query')
-def get_slides_by_query(query, pres_conf_user_state: str = Cookie(default=None)):
+def get_slides_by_query(query, ratio, pres_conf_user_state: str = Cookie(default=None)):
     user_id, user_flow = user_session[pres_conf_user_state]
 
     tag_names = re.findall('[a-z]+[a-z0-9]*', query)
@@ -439,6 +442,9 @@ def get_slides_by_query(query, pres_conf_user_state: str = Cookie(default=None))
         result.append({**slide.json(), 'pres_name': pres.name})
 
     sorted_result = sorted(result, key=lambda slide: slide.get('pres_name'))
+
+    if ratio >= 0:
+        sorted_result = [slide for slide in sorted_result if slide.get('ratio') == ratio]
 
     return sorted_result
 
@@ -510,6 +516,13 @@ def download_built_pres(pres_id, pres_conf_user_state: str = Cookie(default=None
     if pres.owner_id == user_id:
         return FileResponse(
             os.path.join(SROOT, f'presentations/generated/{pres.name}'))
+
+@app.post('/presentations/clear-generated')
+def clear_built_pres(pres_id, pres_conf_user_state: str = Cookie(default=None)):
+    user_id, user_flow = user_session[pres_conf_user_state]
+    pres = db_handler.read(Presentations, pres_id)
+    if pres.owner_id == user_id:
+        os.remove(os.path.join(SROOT, f'presentations/generated/{pres.name}'))
 
 
 @app.post('/links/create')

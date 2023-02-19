@@ -50,12 +50,12 @@ def extract_images(application, name):
     for i in range(slides_num):
         slide = pres.Slides[i]
         slide_ratio = (slide.CustomLayout.Width / slide.CustomLayout.Height)
-        if slide_ratio / (4 / 3) == 0:
+        if slide_ratio - (4 / 3) == 0:
             ratios.append(0)
-        elif slide_ratio / (16 / 9) == 0:
+        elif slide_ratio - (16 / 9) == 0:
             ratios.append(1)
         else:
-            ratios.append(None)
+            ratios.append(-1)
 
     pres.Export(img_path, 'png')
 

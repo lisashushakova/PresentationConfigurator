@@ -7,6 +7,7 @@ class SlideModel(BaseModel):
     id: int
     index: int
     pres_id: str
+    ratio: int
 
 
 class PresentationModel(BaseModel, object):
@@ -16,4 +17,5 @@ class PresentationModel(BaseModel, object):
 
 class BuildPresentationModel(BaseModel):
     name: str
+    ratio: int
     build_from: List[SlideModel]

@@ -50,8 +50,13 @@ export default class PresBuilder {
 
             skipBtn.innerHTML = 'Пропустить'
 
-            skipBtn.addEventListener('click', () => {
+            skipBtn.addEventListener('click', async () => {
                 this.init()
+                await fetch(route + 'presentations/clear-generated?' + new URLSearchParams({
+                    pres_id: this.lastBuild.pres_id
+                }), {
+                    method: 'POST'
+                })
             })
 
         })
@@ -95,7 +100,6 @@ export default class PresBuilder {
             const temp = this.slideBuffer
             this.init()
             this.addSlides(temp)
-            console.log(this.slideBuffer)
         })
 
         const buildBtn = document.createElement('div')

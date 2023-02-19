@@ -211,5 +211,5 @@ class DatabaseHandler:
             session.close()
             return None
 
-db_handler = DatabaseHandler()ыs
+db_handler = DatabaseHandler()
 db_handler.create_db()
