@@ -21,7 +21,8 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse, HTMLResponse, FileResponse
 from starlette.staticfiles import StaticFiles
 
-from database.db_handler import DatabaseHandler, Users, Presentations, Slides, Tags, Links
+from database.db_handler import DatabaseHandler, Users, Presentations, Slides, Tags, SlideLinks, Folders, \
+    FolderPreferences, PresentationLinks
 from definitions import ROOT
 from models.json_models import BuildPresentationModel
 from utils import utils
@@ -124,48 +125,222 @@ def user_picture(pres_conf_user_state: str = Cookie(default=None)):
     return user_name, picture_url
 
 
+@app.get('/folders/list-pref')
+def folders_pref_list(pres_conf_user_state: str = Cookie(default=None)):
+    user_id, user_flow = user_session[pres_conf_user_state]
+    return get_preference_list(user_id)
+
+
+@app.get('/folders/mapped-list-pref')
+def folders_pref_map(pres_conf_user_state: str = Cookie(default=None)):
+    user_id, user_flow = user_session[pres_conf_user_state]
+
+    folders = folders_list(pres_conf_user_state)
+    folder_map = {folder.get('id'): folder for folder in folders}
+    preferences = get_preference_list(user_id)
+
+    pref_map = {folder.get('id'): -1 for folder in folders}
+
+    seen = []
+
+    def traverse_up(folder):
+        if folder.get('id') not in seen and pref_map[folder.get('id')] < 0:
+            pref_map[folder.get('id')] = 0
+            if folder.get('parents') is not None:
+                [parent_id] = folder.get('parents')
+                traverse_up(folder_map[parent_id])
+        seen.append(folder.get('id'))
+
+    for folder in folders:
+        if folder.get('id') in preferences:
+            pref_map[folder.get('id')] = 1
+
+    for folder in folders:
+        if folder.get('id') in preferences:
+            if folder.get('parents') is not None:
+                [parent_id] = folder.get('parents')
+                traverse_up(folder_map[parent_id])
+
+    return pref_map
+
+
+@app.get('/folders/sync')
+def folders_sync(pres_conf_user_state: str = Cookie(default=None)):
+    user_id, user_flow = user_session[pres_conf_user_state]
+    actual_folders_list = folders_list(pres_conf_user_state)
+    db_folders_list = db_handler.findall(Folders, Folders.owner_id == user_id)
+
+    for actual_folder in actual_folders_list:
+        found = False
+        for db_folder in db_folders_list:
+            if actual_folder.get('id') == db_folder.id:
+                found = True
+                break
+        if not found:
+            db_handler.create(Folders, id=actual_folder.get('id'), name=actual_folder.get('name'), owner_id=user_id)
+
+    for db_folder in db_folders_list:
+        found = False
+        for actual_folder in actual_folders_list:
+            if actual_folder.get('id') == db_folder.id:
+                found = True
+                break
+        if not found:
+            db_handler.delete(Folders, db_folder.id)
+
+    f_tree = folders_tree(actual_folders_list)
+
+    return f_tree
+
+
+def folders_list(user_state):
+    user_id, user_flow = user_session[user_state]
+    drive_service = build('drive', 'v3', credentials=user_flow.credentials)
+    response = drive_service.files().list(
+        q="mimeType='application/vnd.google-apps.folder' " \
+          "and not trashed",  # and 'me' in owners
+        fields='files(id, name, parents)').execute()
+    folders = response.get('files')
+    drive = drive_service.files().get(fileId='root').execute()
+    folders = [*folders, drive]
+
+    return folders
+
+
+def get_preference_list(user_id):
+    pref_list = db_handler.findall(FolderPreferences, FolderPreferences.owner_id == user_id)
+    folder_list = []
+    for preference in pref_list:
+        folder = db_handler.read(Folders, preference.folder_id)
+        folder_list.append(folder.id)
+    return folder_list
+
+
+def folders_tree(folders):
+    def traverse(parent):
+        children = []
+        for folder in folders:
+            if folder.get('parents'):
+                [parent_id] = folder.get('parents')
+                if parent_id == parent.get('id'):
+                    children.append(folder)
+                    folder['children'] = traverse(folder)
+        return children
+
+    roots = [folder for folder in folders if folder.get('parents') is None]
+    for root in roots:
+        root['children'] = traverse(root)
+    return roots
+
+
+
+
+@app.post('/folders/add-pref')
+def add_folder_preference(folder_id, pres_conf_user_state: str = Cookie(default=None)):
+    user_id, user_flow = user_session[pres_conf_user_state]
+
+    folders = folders_list(pres_conf_user_state)
+    tree = folders_tree(folders)
+
+    def traverse(folder, child_flag=False):
+        if child_flag or folder.get('id') == folder_id:
+            db_folder = db_handler.read(Folders, folder_id)
+            if db_folder.owner_id == user_id:
+                db_handler.find_or_create(
+                    FolderPreferences,
+                    FolderPreferences.owner_id == user_id,
+                    FolderPreferences.folder_id == folder.get('id'),
+                    owner_id=user_id,
+                    folder_id=folder.get('id')
+                )
+            child_flag = True
+
+        for child in folder.get('children'):
+            traverse(child, child_flag)
+
+    for root in tree:
+        traverse(root)
+
+
+
+
+
+@app.post('/folders/remove-pref')
+def remove_folder_preference(folder_id, pres_conf_user_state: str = Cookie(default=None)):
+    user_id, user_flow = user_session[pres_conf_user_state]
+
+    folders = folders_list(pres_conf_user_state)
+    tree = folders_tree(folders)
+
+    def traverse(folder, child_flag=False):
+        if child_flag or folder.get('id') == folder_id:
+            db_folder = db_handler.read(Folders, folder_id)
+            if db_folder.owner_id == user_id:
+                db_folder_pref = db_handler.find(
+                    FolderPreferences,
+                    FolderPreferences.owner_id == user_id,
+                    FolderPreferences.folder_id == folder.get('id')
+                )
+                if db_folder_pref:
+                    db_handler.delete(FolderPreferences, db_folder_pref.id)
+            child_flag = True
+
+        for child in folder.get('children'):
+            traverse(child, child_flag)
+
+    for root in tree:
+        traverse(root)
+
+
+
+
+
 # Возвращает список презентаций пользователя в виде дерева
 # *Корней может быть несколько (Мой диск, а также папки, которыми поделились с пользователем)
 @app.get('/presentations/tree')
 def pres_tree(pres_conf_user_state: str = Cookie(default=None)):
     user_id, user_flow = user_session[pres_conf_user_state]
     presentations = pres_list(pres_conf_user_state)
+    preferences = get_preference_list(user_id)
     drive_service = build('drive', 'v3', credentials=user_flow.credentials)
     traversed = {}
     root_nodes = []
     for pres in presentations:
-        node = {
-            'type': 'pres',
-            **pres
-        }
-        [parent] = pres.get('parents')
-        while True:
-            if parent not in traversed:
-                parent_node = drive_service.files().get(
-                    fileId=parent,
-                    fields='id, name, parents').execute()
-                if parent_node.get('parents') is None:
-                    root_node = {
-                        'type': 'root',
-                        **parent_node,
-                        'children': [node]
-                    }
-                    root_nodes.append(root_node)
-                    traversed[parent_node.get('id')] = root_node
-                    break
+        if pres.get('parents')[0] in preferences:
+            node = {
+                'type': 'pres',
+                **pres
+            }
+            [parent] = pres.get('parents')
+            while True:
+                if parent not in traversed:
+                    parent_node = drive_service.files().get(
+                        fileId=parent,
+                        fields='id, name, parents').execute()
+                    if parent_node.get('parents') is None:
+                        root_node = {
+                            'type': 'root',
+                            **parent_node,
+                            'children': [node]
+                        }
+                        root_nodes.append(root_node)
+                        traversed[parent_node.get('id')] = root_node
+                        break
+                    else:
+                        node = {
+                            'type': 'folder',
+                            **parent_node,
+                            'children': [node]
+                        }
+                        traversed[node.get('id')] = node
+                        [parent] = node.get('parents')
                 else:
-                    node = {
-                        'type': 'folder',
-                        **parent_node,
-                        'children': [node]
-                    }
-                    traversed[node.get('id')] = node
-                    [parent] = node.get('parents')
-            else:
-                traversed[parent]['children'].append(node)
-                break
+                    traversed[parent]['children'].append(node)
+                    break
 
     return root_nodes
+
+
 
 
 # Возвращает список pptx-презентаций пользователя в формате:
@@ -177,7 +352,7 @@ def pres_list(user_state):
     user_id, user_flow = user_session[user_state]
     drive_service = build('drive', 'v3', credentials=user_flow.credentials)
     response = drive_service.files().list(
-        q="mimeType='application/vnd.openxmlformats-officedocument.presentationml.presentation' " \
+        q=f"mimeType='application/vnd.openxmlformats-officedocument.presentationml.presentation' " \
           "and trashed = false",
         fields='files(id, name, modifiedTime, parents)').execute()
     presentations = [{**pres, 'owner_id': user_id} for pres in response.get('files')]
@@ -192,6 +367,8 @@ def pres_sync(pres_conf_user_state: str = Cookie(default=None)):
 
     user_id, user_flow = user_session[pres_conf_user_state]
     actual_pres_list = pres_list(pres_conf_user_state)
+    preferences = get_preference_list(user_id)
+    actual_pres_list = [pres for pres in actual_pres_list if pres.get('parents')[0] in preferences]
     db_pres_list = [pres.__dict__ for pres in db_handler.findall(Presentations, Presentations.owner_id == user_id)]
     not_changed, updated, created, removed = pres_list_delta(actual_pres_list, db_pres_list)
     print(f"Not changed: {len(not_changed)}\nUpdated: {len(updated)}\nCreated: {len(created)}\nRemoved: {len(removed)}")
@@ -204,8 +381,6 @@ def pres_sync(pres_conf_user_state: str = Cookie(default=None)):
     sync_status[user_id] = sync_dict
 
     ApplicationPPTX = win32com.client.Dispatch("PowerPoint.Application")
-
-    time.sleep(3)
 
     thread_pool.starmap(pres_sync_created, [(pres_conf_user_state, ApplicationPPTX, pres) for pres in created])
 
@@ -400,8 +575,8 @@ def get_slides_by_text(search_phrase, ratio, pres_conf_user_state: str = Cookie(
     for slide in slides_found:
         pres = db_handler.read(Presentations, slide.pres_id)
         result.append({**Slides(**slide).json(), 'pres_name': pres.name})
-    if int(ratio) >= 0:
-        result = [slide for slide in result if slide.get('ratio') == int(ratio)]
+    # if int(ratio) >= 0:
+    #     result = [slide for slide in result if slide.get('ratio') == int(ratio)]
     return result
 
 
@@ -412,7 +587,7 @@ def get_slides_by_query(query, ratio, pres_conf_user_state: str = Cookie(default
     tag_names = re.findall('[a-z]+[a-z0-9]*', query)
     tag_names = [tag for tag in tag_names if tag not in ['and', 'or', 'not']]
 
-    links_and_tags = db_handler.get_links_and_tags(user_id, tag_names)
+    links_and_tags = db_handler.get_links_and_tags(SlideLinks, user_id, tag_names)
 
     slides_tags_values = {}
     for link, tag in links_and_tags:
@@ -429,7 +604,7 @@ def get_slides_by_query(query, ratio, pres_conf_user_state: str = Cookie(default
     for slide_id in slides_tags_values.keys():
         eval_query = query
         for tag in slides_tags_values[slide_id].keys():
-            eval_query = eval_query.replace(tag, str(slides_tags_values[slide_id][tag]))
+            eval_query = re.sub(rf"(^{tag}\s+)|( +{tag}\s+)|(\s+{tag}$)|({tag})", f" {str(slides_tags_values[slide_id][tag])} ", eval_query)
         if eval(eval_query):
             filtered_slides.append(slide_id)
 
@@ -443,10 +618,43 @@ def get_slides_by_query(query, ratio, pres_conf_user_state: str = Cookie(default
 
     sorted_result = sorted(result, key=lambda slide: slide.get('pres_name'))
 
-    if ratio >= 0:
-        sorted_result = [slide for slide in sorted_result if slide.get('ratio') == ratio]
+    # if int(ratio) >= 0:
+    #     sorted_result = [slide for slide in sorted_result if slide.get('ratio') == int(ratio)]
 
     return sorted_result
+
+
+@app.get('/presentations/by-tag-query')
+def get_slides_by_query(query, pres_conf_user_state: str = Cookie(default=None)):
+    user_id, user_flow = user_session[pres_conf_user_state]
+
+    tag_names = re.findall('[a-z]+[a-z0-9]*', query)
+    tag_names = [tag.strip() for tag in tag_names if tag.strip() not in ['and', 'or', 'not']]
+
+    links_and_tags = db_handler.get_links_and_tags(PresentationLinks, user_id, tag_names)
+
+    pres_tags_values = {}
+    for link, tag in links_and_tags:
+        if pres_tags_values.get(link.pres_id) is None:
+            pres_tags_values[link.pres_id] = {key: False for key in tag_names}
+
+        if link.value is not None:
+            pres_tags_values[link.pres_id][tag.name] = link.value
+        else:
+            pres_tags_values[link.pres_id][tag.name] = True
+
+    filtered_pres = []
+
+    for pres_id in pres_tags_values.keys():
+        eval_query = query
+        for tag in pres_tags_values[pres_id].keys():
+            eval_query = re.sub(rf"(^{tag}\s+)|( +{tag}\s+)|(\s+{tag}$)|({tag})", f" {str(pres_tags_values[pres_id][tag])} ", eval_query)
+        if eval(eval_query):
+            filtered_pres.append(pres_id)
+
+    found_pres = db_handler.findall(Presentations, Presentations.id.in_(filtered_pres))
+
+    return found_pres
 
 
 @app.post('/presentations/build')
@@ -517,6 +725,7 @@ def download_built_pres(pres_id, pres_conf_user_state: str = Cookie(default=None
         return FileResponse(
             os.path.join(SROOT, f'presentations/generated/{pres.name}'))
 
+
 @app.post('/presentations/clear-generated')
 def clear_built_pres(pres_id, pres_conf_user_state: str = Cookie(default=None)):
     user_id, user_flow = user_session[pres_conf_user_state]
@@ -525,8 +734,8 @@ def clear_built_pres(pres_id, pres_conf_user_state: str = Cookie(default=None)):
         os.remove(os.path.join(SROOT, f'presentations/generated/{pres.name}'))
 
 
-@app.post('/links/create')
-def create_link(slide_id, tag_name, value=None, pres_conf_user_state: str = Cookie(default=None)):
+@app.post('/links/create-slide-link')
+def create_slide_link(slide_id, tag_name, value=None, pres_conf_user_state: str = Cookie(default=None)):
     user_id, user_flow = user_session[pres_conf_user_state]
 
     slide = db_handler.read(Slides, slide_id)
@@ -540,35 +749,85 @@ def create_link(slide_id, tag_name, value=None, pres_conf_user_state: str = Cook
         owner_id=user_id
     )
     link_created, link = db_handler.find_or_create(
-        Links,
-        Links.slide_id == slide_id, Links.tag_id == tag.id,
+        SlideLinks,
+        SlideLinks.slide_id == slide_id, SlideLinks.tag_id == tag.id,
         slide_id=slide_id,
         tag_id=tag.id,
         value=value
     )
     if not link_created:
-        db_handler.update(Links, link.id, value=value)
+        db_handler.update(SlideLinks, link.id, value=value)
         return 'Link updated'
 
     return 'Link created'
 
 
-@app.post('/links/remove')
-def remove_link(slide_id, tag_name, pres_conf_user_state: str = Cookie(default=None)):
+@app.post('/links/create-pres-link')
+def create_pres_link(pres_id, tag_name, value=None, pres_conf_user_state: str = Cookie(default=None)):
+    user_id, user_flow = user_session[pres_conf_user_state]
+
+    pres = db_handler.read(Presentations, pres_id)
+    if pres is None:
+        return 'Presentation does not exist'
+
+    tag_created, tag = db_handler.find_or_create(
+        Tags,
+        Tags.owner_id == user_id, Tags.name == tag_name,
+        name=tag_name,
+        owner_id=user_id
+    )
+    link_created, link = db_handler.find_or_create(
+        PresentationLinks,
+        PresentationLinks.pres_id == pres_id, PresentationLinks.tag_id == tag.id,
+        pres_id=pres_id,
+        tag_id=tag.id,
+        value=value
+    )
+    if not link_created:
+        db_handler.update(PresentationLinks, link.id, value=value)
+        return 'Link updated'
+
+    return 'Link created'
+
+
+@app.post('/links/remove-slide-link')
+def remove_slide_link(slide_id, tag_name, pres_conf_user_state: str = Cookie(default=None)):
     user_id, user_flow = user_session[pres_conf_user_state]
 
     tag = db_handler.find(Tags, Tags.owner_id == user_id, Tags.name == tag_name)
     if tag is None:
         return "Tag does not exists"
-    link = db_handler.find(Links, Links.slide_id == slide_id, Links.tag_id == tag.id)
+    link = db_handler.find(SlideLinks, SlideLinks.slide_id == slide_id, SlideLinks.tag_id == tag.id)
     if link is None:
         return "Link does not exists"
-    db_handler.delete(Links, link.id)
+    db_handler.delete(SlideLinks, link.id)
+
+@app.post('/links/remove-pres-link')
+def remove_pres_link(pres_id, tag_name, pres_conf_user_state: str = Cookie(default=None)):
+    user_id, user_flow = user_session[pres_conf_user_state]
+
+    tag = db_handler.find(Tags, Tags.owner_id == user_id, Tags.name == tag_name)
+    if tag is None:
+        return "Tag does not exists"
+    link = db_handler.find(PresentationLinks, PresentationLinks.pres_id == pres_id, PresentationLinks.tag_id == tag.id)
+    if link is None:
+        return "Link does not exists"
+    db_handler.delete(PresentationLinks, link.id)
 
 
 @app.get('/links/slide-tags')
 def get_slide_tags(slide_id):
-    links = db_handler.findall(Links, Links.slide_id == slide_id)
+    links = db_handler.findall(SlideLinks, SlideLinks.slide_id == slide_id)
+    tags = []
+    for link in links:
+        tag = db_handler.find(Tags, Tags.id == link.tag_id)
+        tags.append({'id': tag.id, 'name': tag.name, 'owner_id': tag.owner_id, 'value': link.value})
+    return tags
+
+
+@app.get('/links/pres-tags')
+def get_pres_tags(pres_id):
+    links = db_handler.findall(PresentationLinks, PresentationLinks.pres_id == pres_id)
     tags = []
     for link in links:
         tag = db_handler.find(Tags, Tags.id == link.tag_id)
@@ -617,11 +876,11 @@ def upload_pres(user_state, pres_name):
 
 
 def migrate_tags(slide_from, slide_to):
-    slide_from_links = db_handler.findall(Links, Links.slide_id == slide_from.id)
+    slide_from_links = db_handler.findall(SlideLinks, SlideLinks.slide_id == slide_from.id)
     for link in slide_from_links:
         db_handler.find_or_create(
-            Links,
-            Links.slide_id == slide_to.id, Links.tag_id == link.tag_id,
+            SlideLinks,
+            SlideLinks.slide_id == slide_to.id, SlideLinks.tag_id == link.tag_id,
             slide_id=slide_to.id,
             tag_id=link.tag_id,
             value=link.value

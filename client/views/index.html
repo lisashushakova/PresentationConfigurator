@@ -10,6 +10,7 @@
     <link href="views/styles/main-pres-column.css" rel="stylesheet">
     <link href="views/styles/pres-builder.css" rel="stylesheet">
     <link href="views/styles/builder-column.css" rel="stylesheet">
+    <link href="views/styles/user-settings.css" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -17,6 +18,9 @@
         <div class="logout-box">
             <img id="user-icon-img">
             <div id="user-name-box"></div>
+            <div id="user-settings-btn">
+                <img src="views/icons/settings.svg">
+            </div>
             <div id="logout-btn">
                 <img src="views/icons/logout.svg">
             </div>
@@ -30,6 +34,7 @@
             <div id='filesTreeList' class="ftl-container">
                 <div class="ftl-header">
                     <input class="ftl-search-field" type="text" placeholder="Поиск"/>
+                    <div id="pres-search-by-tag-btn"><img src="views/icons/tag-search-dark.svg"></div>
                     <div id="ftl-refresh-btn"><img src="views/icons/refresh.svg"></div>
                 </div>
                 <div class="ftl-body"></div>
@@ -37,7 +42,11 @@
         </div>
         <div class="main-pres-column">
             <div class="main-pres-column-body">
-                <div class="main-pres-column-header">Название презентации</div>
+                <div class="main-pres-column-header">
+                    Название презентации
+                    <div class="toggle-pres-tags-button hidden"></div>
+                </div>
+
                 <div class="pres-drawer-header">
                     <input class="pres-drawer-search-field" type="text" placeholder="Поиск"/>
                     <div id="pres-drawer-tag-search-btn"><img src="views/icons/tag-search-dark.svg"></div>
@@ -62,8 +71,21 @@
             </div>
         </div>
 
+        <div class="user-settings-wrapper hidden">
+            <div class="user-settings-modal">
+            <div class="user-settings-modal-header">
+                Настройка отслеживаемых папок
+            </div>
+            <div class="user-settings-modal-path"></div>
+            <div class="user-settings-modal-body">
+
+            </div>
+        </div>
+    </div>
+
     </div>
     <script src="views/scripts/script.js" type="module"></script>
+    <script src="views/scripts/user-settings.js" type="module"></script>
 
 </body>
 </html>

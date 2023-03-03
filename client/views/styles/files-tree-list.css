@@ -50,6 +50,19 @@ input {
     width: 25px;
 }
 
+#pres-search-by-tag-btn {
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+
+    box-sizing: border-box;
+    padding: 0 10px 0 10px;
+}
+
+#pres-search-by-tag-btn img {
+    height: 30px;
+}
+
 .ftl-search-field::placeholder {
     color: whitesmoke;
 }

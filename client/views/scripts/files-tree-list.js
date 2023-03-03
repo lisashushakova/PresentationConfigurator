@@ -13,10 +13,25 @@ export default class FilesTreeList {
         this.selectedPres = null
 
         this.drawerCallback = drawerCallback
+
+        const tagSearchButton = document.querySelector('#pres-search-by-tag-btn')
+        tagSearchButton.addEventListener('click', async () => {
+            for (const root of this.fileTree) {
+                this.traverseAndShow(root)
+            }
+            const filteredPres = await fetch(route + 'presentations/by-tag-query?' + new URLSearchParams({
+                query: this.searchField.value
+            })).then(res => res.json())
+            for (const root of this.fileTree) {
+                this.traverseAndFilter(root, filteredPres.map(pres => pres.id))
+            }
+        })
     }
 
     init(fileTree) {
         this.selectedPres = null
+        const togglePresTagsBtn = document.querySelector('.toggle-pres-tags-button')
+        togglePresTagsBtn.classList.add('hidden')
         this.fileTree = fileTree
         this.body.innerHTML = ''
         for (const root of fileTree) {
@@ -78,6 +93,9 @@ export default class FilesTreeList {
 
     traverseAndBuild(parent, parentHTML, child) {
         const childHTML = document.createElement('div')
+
+        const togglePresTagsBtn = document.querySelector('.toggle-pres-tags-button')
+
         parentHTML.appendChild(childHTML)
         childHTML.innerHTML = child.name
 
@@ -94,6 +112,8 @@ export default class FilesTreeList {
                     const mainPresColumnHeader = document.querySelector('.main-pres-column-header')
                     childHTML.selected = !childHTML.selected
                     if (childHTML.selected) {
+                        togglePresTagsBtn.classList.remove('hidden')
+
                         if (this.selectedPres != null) {
                             this.selectedPres.html.selected = false
                             this.selectedPres.html.classList.remove('selected')
@@ -103,19 +123,20 @@ export default class FilesTreeList {
                         this.selectedPres = child
                         childHTML.classList.add('selected')
 
-                        mainPresColumnHeader.innerHTML = child.name
+                        mainPresColumnHeader.childNodes[0].textContent = child.name
 
                         const selectedPresSlides = await fetch(route + 'slides/by-pres-id?' + new URLSearchParams({
                             pres_id: this.selectedPres.id
                         })).then(res => res.json())
-                        await this.drawerCallback(selectedPresSlides)
+                        await this.drawerCallback(selectedPresSlides, this.selectedPres.id)
                     } else {
                         this.selectedPres = null
+                        togglePresTagsBtn.classList.add('hidden')
                         childHTML.classList.remove('selected')
 
-                        mainPresColumnHeader.innerHTML = 'Название презентации'
+                        mainPresColumnHeader.childNodes[0].textContent = 'Название презентации'
 
-                        await this.drawerCallback(null)
+                        await this.drawerCallback(null, null)
 
                     }
                 }
@@ -152,6 +173,26 @@ export default class FilesTreeList {
         if (node.hasOwnProperty('children')) {
             for (const child of node.children) {
                 this.traverseAndShow(child)
+            }
+        }
+    }
+
+    traverseAndFilter(node, filterIdList) {
+        if (node.hasOwnProperty('children')) {
+            let res = []
+            for (const child of node.children) {
+                res.push(this.traverseAndFilter(child, filterIdList))
+            }
+            if (!res.some(x => x)) {
+                node.html.classList.add('hidden')
+            }
+            return res
+        } else {
+            if (!filterIdList.includes(node.id)) {
+                node.html.classList.add('hidden')
+                return false
+            } else {
+                return true
             }
         }
     }

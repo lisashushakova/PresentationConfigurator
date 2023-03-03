@@ -17,5 +17,4 @@ class PresentationModel(BaseModel, object):
 
 class BuildPresentationModel(BaseModel):
     name: str
-    ratio: int
     build_from: List[SlideModel]

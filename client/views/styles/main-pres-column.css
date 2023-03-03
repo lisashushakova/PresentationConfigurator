@@ -34,8 +34,10 @@
     color: whitesmoke;
     font-family: 'Helvetica', 'Arial', sans-serif;
     font-size: 20pt;
-
+    position: relative;
     background: var(--color-accent);
+
+    user-select: none;
 }
 
 
@@ -55,6 +57,10 @@
 
     color: whitesmoke;
     font-size: 20pt;
+
+    user-select: none;
+
+
 }
 
 
@@ -85,9 +91,6 @@
     justify-content: center;
 }
 
-.pres-drawer-slide-ratio-btn {
-    color: whitesmoke;
-}
 
 .pres-drawer-header img {
     height: 30px;
@@ -98,7 +101,6 @@
     width: 100%;
     height: calc(100% - 105px);
     box-sizing: border-box;
-    overflow-y: scroll;
     z-index: 10;
 }
 
@@ -116,5 +118,15 @@
     width: 40px;
 }
 
-
+.toggle-pres-tags-button {
+    position: absolute;
+    right: 20px;
+    height: 40px;
+    width: 80px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    user-select: none;
+    top: 0;
+}
 

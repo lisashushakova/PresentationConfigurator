@@ -21,22 +21,47 @@ logoutBtn.addEventListener('click', async () => {
 })
 
 
-
-
 const drawerElement = document.querySelector('.pres-drawer')
 const presDrawer = new PresentationDrawer()
+const presDrawerToggleBtn = document.querySelector('.toggle-pres-tags-button')
 
-const ftlContainer = document.querySelector('#filesTreeList')
-const ftl = new FilesTreeList(ftlContainer, async (presSlidesList) => {
-    await presDrawer.draw(drawerElement, presSlidesList)
+const PresDrawerState = {
+    SlideCards: 0,
+    PresentationTags: 1
+}
+
+presDrawerToggleBtn.state = PresDrawerState.SlideCards
+presDrawerToggleBtn.innerHTML = 'Слайды'
+presDrawerToggleBtn.addEventListener('click', async () => {
+    if (ftl.selectedPres !== null) {
+        switch(presDrawerToggleBtn.state) {
+        case PresDrawerState.SlideCards:
+            presDrawerToggleBtn.state = PresDrawerState.PresentationTags
+            presDrawerToggleBtn.innerHTML = 'Теги'
+            await presDrawer.drawPresentationCard(drawerElement)
+            break
+        case PresDrawerState.PresentationTags:
+            presDrawerToggleBtn.state = PresDrawerState.SlideCards
+            presDrawerToggleBtn.innerHTML = 'Слайды'
+            await presDrawer.draw(drawerElement, presDrawer.slides, presDrawer.pres_id)
+            break
+    }
+    }
+
 })
 
+
+const ftlContainer = document.querySelector('#filesTreeList')
+const ftl = new FilesTreeList(ftlContainer, async (presSlidesList, pres_id) => {
+    presDrawerToggleBtn.state = PresDrawerState.SlideCards
+    presDrawerToggleBtn.innerHTML = 'Слайды'
+    await presDrawer.draw(drawerElement, presSlidesList, pres_id)
+})
 
 
 const syncDoneEvent = new CustomEvent('sync-done')
 
-
-const refreshPresTree = async () => {
+export const refreshPresTree = async () => {
     const presTree = await fetch(route + 'presentations/tree').then(res => res.json())
     ftl.init(presTree)
 
@@ -65,18 +90,21 @@ ftlRefreshBtn.addEventListener('click', refreshPresTree)
 await refreshPresTree()
 
 
+
+
 const presBuilder = new PresBuilder()
 presBuilder.init()
 
 const exportAllSlidesBtn = document.querySelector('#export-all-slides-btn')
 exportAllSlidesBtn.addEventListener('click', () => {
-    presBuilder.addSlides(presDrawer.slides)
+    presBuilder.addSlides(presDrawer.getAllDisplayedSlides())
 })
 
 const exportSelectedSlidesBtn = document.querySelector('#export-selected-slides-btn')
 exportSelectedSlidesBtn.addEventListener('click', () => {
-    presBuilder.addSlides(presDrawer.selectedSlides)
+    presBuilder.addSlides(presDrawer.getSelectedDisplayedSlides())
 })
+
 
 
 

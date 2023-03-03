@@ -18,6 +18,21 @@ class Users(Base):
     name = Column('name', String, nullable=False)
 
 
+class Folders(Base):
+    __tablename__ = 'folders'
+
+    id = Column('id', String, primary_key=True)
+    name = Column('name', String, nullable=False)
+    owner_id = Column('owner_id', String, ForeignKey("users.id"), nullable=False)
+
+
+class FolderPreferences(Base):
+    __tablename__ = 'folder_preferences'
+    id = Column('id', Integer, Identity(start=1, increment=1), primary_key=True)
+    owner_id = Column('owner_id', String, ForeignKey("users.id"), nullable=False)
+    folder_id = Column('folder_id', String, ForeignKey("folders.id"), nullable=False)
+
+
 class Presentations(Base):
     __tablename__ = 'presentations'
 
@@ -28,7 +43,7 @@ class Presentations(Base):
     modified_time = Column('modified_time', DateTime, nullable=False)
 
     child_slides = relationship('Slides', backref='presentations', cascade='all, delete', passive_deletes=True)
-
+    child_links = relationship('PresentationLinks', backref='presentations', cascade='delete', passive_deletes=True)
 
 class Slides(Base):
     __tablename__ = 'slides'
@@ -41,7 +56,7 @@ class Slides(Base):
     ratio = Column('ratio', Integer, nullable=True)
 
     parent_pres = relationship('Presentations', backref='slides', cascade='all, delete')
-    child_links = relationship('Links', backref='slides', cascade='delete', passive_deletes=True)
+    child_links = relationship('SlideLinks', backref='slides', cascade='delete', passive_deletes=True)
 
     def json(self):
         return {
@@ -61,14 +76,24 @@ class Tags(Base):
     owner_id = Column('owner_id', String, ForeignKey("users.id"), nullable=False)
 
 
-class Links(Base):
-    __tablename__ = 'links'
+class SlideLinks(Base):
+    __tablename__ = 'slide_links'
 
     id = Column('id', Integer, Identity(start=1, increment=1), primary_key=True)
     slide_id = Column('slide_id', Integer, ForeignKey("slides.id", ondelete='CASCADE'), nullable=False)
     tag_id = Column('tag_id', Integer, ForeignKey("tags.id"), nullable=False)
     value = Column('value', Integer)
-    parent_slides = relationship('Slides', backref='links')
+    parent_slides = relationship('Slides', backref='slide-links')
+
+
+class PresentationLinks(Base):
+    __tablename__ = 'presentation_links'
+
+    id = Column('id', Integer, Identity(start=1, increment=1), primary_key=True)
+    pres_id = Column('pres_id', String, ForeignKey("presentations.id", ondelete='CASCADE'), nullable=False)
+    tag_id = Column('tag_id', Integer, ForeignKey("tags.id"), nullable=False)
+    value = Column('value', Integer)
+    parent_slides = relationship('Presentations', backref='pres-links')
 
 
 class DatabaseHandler:
@@ -88,7 +113,10 @@ class DatabaseHandler:
         session.execute('''TRUNCATE TABLE presentations CASCADE''')
         session.execute('''TRUNCATE TABLE slides CASCADE''')
         session.execute('''TRUNCATE TABLE tags CASCADE''')
-        session.execute('''TRUNCATE TABLE links CASCADE''')
+        session.execute('''TRUNCATE TABLE presentation_links CASCADE''')
+        session.execute('''TRUNCATE TABLE slide_links CASCADE''')
+        session.execute('''TRUNCATE TABLE folders CASCADE''')
+        session.execute('''TRUNCATE TABLE folder_preferences CASCADE''')
         session.commit()
         session.close()
 
@@ -189,11 +217,11 @@ class DatabaseHandler:
             session.close()
             return None
 
-    def get_links_and_tags(self, user_id, tag_names):
+    def get_links_and_tags(self, table, user_id, tag_names):
         session = self.Session()
-        links_and_tags = session.query(Links, Tags) \
+        links_and_tags = session.query(table, Tags) \
             .filter(Tags.name.in_(tag_names), Tags.owner_id == user_id) \
-            .filter(Links.tag_id == Tags.id) \
+            .filter(table.tag_id == Tags.id) \
             .all()
         session.close()
         return links_and_tags
@@ -211,5 +239,6 @@ class DatabaseHandler:
             session.close()
             return None
 
-db_handler = DatabaseHandler()
-db_handler.create_db()
+if __name__ == "__main__":
+    db_handler = DatabaseHandler()
+    db_handler.create_db()

@@ -1,4 +1,4 @@
-*, input::placeholder {
+.pres-drawer *, .pres-drawer input::placeholder {
     color: whitesmoke;
     font-family: 'Helvetica', 'Arial', sans-serif;
     font-size: 10pt;
@@ -6,9 +6,11 @@
 
 .pres-drawer {
     display: flex;
-    flex-direction: column;;
+    flex-direction: column;
     gap: 30px;
     padding: 30px 15px 30px 15px;
+
+    overflow-y: auto;
 }
 
 .pres-drawer-not-found {
@@ -24,6 +26,16 @@
     border: 2px solid lightgray;
     border-radius: 5px;
     user-select: none;
+}
+
+.pres-drawer-card.pres-tags  {
+    align-items: center;
+    gap: 10px;
+
+    color: var(--color-accent);
+    font-size: 20pt;
+
+    border: none;
 }
 
 .pres-drawer-card-header {
@@ -43,10 +55,17 @@
 
 }
 
-.pres-drawer-card-body {
+.pres-drawer-card-body.ratio-16-to-9 {
     display: flex;
     width: 600px;
     height: 340px;
+    flex-direction: row;
+}
+
+.pres-drawer-card-body.ratio-4-to-3 {
+    display: flex;
+    width: 600px;
+    height: 450px;
     flex-direction: row;
 }
 

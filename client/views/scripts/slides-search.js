@@ -21,14 +21,17 @@ export default function initSlideSearch(drawerElement, presDrawer) {
             case SlideRatio.RATIO_AUTO:
                 slideRatioState = SlideRatio.RATIO_4_TO_3
                 slideRatioSearch.innerHTML = '4:3'
+                presDrawer.filterSlides(slideRatioState)
                 break
             case SlideRatio.RATIO_4_TO_3:
                 slideRatioState = SlideRatio.RATIO_16_TO_9
                 slideRatioSearch.innerHTML = '16:9'
+                presDrawer.filterSlides(slideRatioState)
                 break
             case SlideRatio.RATIO_16_TO_9:
                 slideRatioState = SlideRatio.RATIO_AUTO
                 slideRatioSearch.innerHTML = 'Авто'
+                presDrawer.filterSlides(slideRatioState)
                 break
         }
     })
@@ -40,7 +43,7 @@ export default function initSlideSearch(drawerElement, presDrawer) {
             ratio: slideRatioState
         })).then(res => res.json())
         mainPresColumnHeader.innerHTML = 'Результаты поиска по тегам'
-        await presDrawer.draw(drawerElement, slidesFound)
+        await presDrawer.draw(drawerElement, slidesFound, null)
 
     })
 
@@ -51,7 +54,7 @@ export default function initSlideSearch(drawerElement, presDrawer) {
             ratio: slideRatioState
         })).then(res => res.json())
         mainPresColumnHeader.innerHTML = 'Результаты поиска по тексту'
-        await presDrawer.draw(drawerElement, slidesFound)
+        await presDrawer.draw(drawerElement, slidesFound, null)
     })
 
 
