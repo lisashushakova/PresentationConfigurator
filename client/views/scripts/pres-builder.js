@@ -9,6 +9,8 @@ export default class PresBuilder {
 
         this.lastBuild = null
 
+        this.backStack = []
+
         this.container = document.querySelector('.pres-builder')
         this.container.addEventListener('build-complete', () => {
             const buildComplete = document.createElement('div')
@@ -106,25 +108,33 @@ export default class PresBuilder {
         buildBtn.innerHTML = 'Собрать презентацию'
         buildBtn.classList.add('pres-builder-build-btn')
         buildBtn.addEventListener('click', async () => {
-            buildBtn.classList.add('build-wait')
-            let name = nameField.value
-            if (name === '') {
-                name = 'New Presentation'
-            }
-            this.lastBuild = await fetch(route + 'presentations/build', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: name,
-                    build_from: this.slideBuffer
-                })
-            }).then(res => res.json())
-            buildBtn.classList.remove('build-wait')
-            this.container.dispatchEvent(this.buildCompleteEvent)
+            const foldersTree = await fetch(route + 'folders/tree').then(res => res.json())
+            this.drawFolders(foldersTree)
         })
         this.footer.appendChild(buildBtn)
+    }
+
+    async buildPres(folder_id) {
+        const buildBtn = document.querySelector('.pres-builder-build-btn')
+        buildBtn.classList.add('build-wait')
+        const nameField = document.querySelector('.pres-builder-name-field')
+        let name = nameField.value
+        if (name === '') {
+            name = 'New Presentation'
+        }
+        this.lastBuild = await fetch(route + 'presentations/build', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                build_from: this.slideBuffer,
+                folder: folder_id
+            })
+        }).then(res => res.json())
+        buildBtn.classList.remove('build-wait')
+        this.container.dispatchEvent(this.buildCompleteEvent)
     }
 
     addSlides(slides) {
@@ -188,7 +198,62 @@ export default class PresBuilder {
             })
         }
     }
+
+    drawFolders(folders) {
+        const selectFolderModal = document.querySelector('.builder-select-folder-modal')
+        selectFolderModal.classList.remove('hidden')
+        const selectFolderModalBody = document.querySelector('.builder-select-folder-modal-body')
+        const selectFolderModalFooter = document.querySelector('.builder-select-folder-modal-footer')
+        selectFolderModalBody.innerHTML = ''
+        selectFolderModalFooter.innerHTML = ''
+        for (const folder of folders) {
+            const folderObject = document.createElement('div')
+            folderObject.classList.add('select-folder-modal-folder')
+            selectFolderModalBody.appendChild(folderObject)
+
+
+            const folderImg = document.createElement('img')
+            folderImg.classList.add('select-folder-modal-folder-img')
+            folderImg.src = '/views/icons/folder.svg'
+            folderObject.appendChild(folderImg)
+            folderObject.folderImg = folderImg
+            folderObject.innerHTML += folder.name
+
+            folderObject.addEventListener('dblclick', async () => {
+                this.selectedFolder = folder.id
+                this.backStack.push(folders)
+                this.drawFolders(folder.children)
+            })
+        }
+
+        const confirmFolderSelectBtn = document.createElement('div')
+        confirmFolderSelectBtn.classList.add('builder-select-folder-modal-confirm-btn')
+        confirmFolderSelectBtn.innerHTML = 'OK'
+
+        confirmFolderSelectBtn.addEventListener('click', async () => {
+            selectFolderModal.classList.add('hidden')
+            await this.buildPres(this.selectedFolder)
+        })
+
+        selectFolderModalFooter.appendChild(confirmFolderSelectBtn)
+
+        const backBtn = document.createElement('div')
+        backBtn.classList.add('builder-select-folder-modal-back-btn')
+        backBtn.innerHTML = 'Назад'
+
+        backBtn.addEventListener('click', () => {
+            if (this.backStack.length > 0) {
+                folders = this.backStack.pop()
+                this.drawFolders(folders)
+            }
+        })
+
+        selectFolderModalFooter.appendChild(backBtn)
+    }
+
+
 }
+
 
 const array_move = (arr, old_index, new_index) => {
     const el = arr[old_index]

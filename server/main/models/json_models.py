@@ -18,3 +18,4 @@ class PresentationModel(BaseModel, object):
 class BuildPresentationModel(BaseModel):
     name: str
     build_from: List[SlideModel]
+    folder: str

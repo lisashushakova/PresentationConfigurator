@@ -124,6 +124,11 @@ def user_picture(pres_conf_user_state: str = Cookie(default=None)):
 
     return user_name, picture_url
 
+@app.get('/folders/tree')
+def user_folder_tree(pres_conf_user_state: str = Cookie(default=None)):
+    folders = folders_list(pres_conf_user_state)
+    tree = folders_tree(folders)
+    return tree
 
 @app.get('/folders/list-pref')
 def folders_pref_list(pres_conf_user_state: str = Cookie(default=None)):
@@ -712,7 +717,7 @@ def build_pres(new_pres: BuildPresentationModel, pres_conf_user_state: str = Coo
         )
         utils.clear_watermark(os.path.join(SROOT, f'presentations/generated/{new_pres.name}.pptx'))
 
-    pres = upload_pres(pres_conf_user_state, new_pres.name)
+    pres = upload_pres(pres_conf_user_state, new_pres.name, new_pres.folder)
     pres_sync_uploaded(pres_conf_user_state, pres, seen_text, seen_thumbs, seen_slides)
     return pres
 
@@ -857,13 +862,16 @@ def download_pres(user_state, pres):
         f.write(file.getvalue())
 
 
-def upload_pres(user_state, pres_name):
+def upload_pres(user_state, pres_name, upload_to=None):
     user_id, user_flow = user_session[user_state]
     credentials = user_flow.credentials
     drive = build('drive', 'v3', credentials=credentials)
     file_metadata = {
-        'name': f'{pres_name}.pptx'
+        'name': f'{pres_name}.pptx',
     }
+    if upload_to:
+        file_metadata['parents'] = [upload_to]
+
     media = MediaFileUpload(
         os.path.join(SROOT, f"presentations/generated/{pres_name}.pptx"),
         mimetype='application/vnd.openxmlformats-officedocument.presentationml.presentation'
