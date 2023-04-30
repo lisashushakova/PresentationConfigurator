@@ -1,0 +1,184 @@
+.BuildPresentationModal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+    left: -30px;
+    right:-30px;
+
+    width: 100%;
+    height: 100%;
+
+    top:0;
+    margin: auto;
+
+    background: rgba(0, 0, 0, 0.5)
+}
+
+.BuildPresentationModal > .build-presentation {
+    width: 600px;
+    height: 800px;
+
+    position: relative;
+    
+    background: white;
+    box-sizing: border-box;
+    border: 2px solid black;
+
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.BuildPresentationModal > .build-presentation > h3 {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 20pt;
+    margin: 0;
+}
+
+.BuildPresentationModal > .build-presentation > .pres-name {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+
+    width: 500px;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 12pt;
+
+    box-sizing: border-box;
+    padding-left: 50px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid black;
+}
+
+
+.BuildPresentationModal > .build-presentation > .pres-name > input {
+    width: 200px;
+    height: 20px;
+}
+
+.BuildPresentationModal > .build-presentation > .save-to {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 20px;
+
+    width: 500px;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 12pt;
+
+    box-sizing: border-box;
+    padding-left: 50px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid black;
+}
+
+.BuildPresentationModal > .build-presentation > .save-to > button {
+    margin-left: -50px;
+    align-self: center;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 12pt;
+
+    background: white;
+
+    padding: 5px 10px;
+}
+
+.BuildPresentationModal > .build-presentation > .style-templates {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 20px;
+
+    width: 500px;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 12pt;
+
+    box-sizing: border-box;
+    padding-left: 50px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid black;
+}
+
+.BuildPresentationModal > .build-presentation > .style-templates > .style-templates-list {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    overflow-x: auto;
+    width: 450px;
+    align-self: center;
+    margin-left:-50px;
+    padding: 10px 10px 10px 20px;
+    box-sizing: border-box;
+    border: 2px solid rgba(0, 0, 0, 0.3)
+}
+
+.BuildPresentationModal > .build-presentation > .style-templates > .style-templates-list > .loading {
+    align-self: center;
+    justify-self: center;
+    width: 200px;
+    height: 100px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 16pt;
+}
+
+.BuildPresentationModal > .build-presentation > .style-templates > .style-templates-list > .TemplateCard {
+    width: 200px;
+    box-sizing: border-box;
+    border: 2px solid black;
+    border-radius: 15px;
+}
+
+.BuildPresentationModal > .build-presentation > .style-templates > .style-templates-list > .TemplateCard.selected {
+    border-color:red;
+}
+
+.BuildPresentationModal > .build-presentation > .ratio-filter {
+    width: 500px;
+    box-sizing: border-box;
+    padding-left: 50px;
+    gap: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-bottom: 20px;
+    border-bottom: 1px solid black;
+}
+
+.BuildPresentationModal > .build-presentation > .ratio-filter > .radio-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    box-sizing: border-box;
+    padding-left: 20px;
+}
+
+.BuildPresentationModal > .build-presentation > button {
+    position: absolute;
+    bottom: 40px;
+    padding: 5px 10px;
+    background: white;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14pt;
+}

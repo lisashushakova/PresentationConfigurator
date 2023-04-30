@@ -1,0 +1,46 @@
+.SlidePoolBlock {
+    display: flex;
+    height: 850px;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 40px;
+    overflow-y: auto;
+    gap: 40px;
+}
+
+.SlidePoolBlock > .PoolSlideCard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: center;
+    gap: 10px;
+}
+
+.SlidePoolBlock > .PoolSlideCard > h5 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 18pt;
+
+}
+
+.SlidePoolBlock > .PoolSlideCard > img.widescreen_16_to_9 {
+    aspect-ratio: calc(16 / 9);
+    height: 300px;
+    border: 2px solid black;
+    border-radius: 20px;
+}
+
+.SlidePoolBlock > .PoolSlideCard > img.standard_4_to_3 {
+    aspect-ratio: calc(4 / 3);
+    height: 300px;
+    border: 2px solid black;
+    border-radius: 20px;
+}
+
+.SlidePoolBlock > .PoolSlideCard > img.selected {
+    border-color: red;
+}
+

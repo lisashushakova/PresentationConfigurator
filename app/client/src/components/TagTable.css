@@ -1,0 +1,145 @@
+.TagTable {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding-top: 20px;
+}
+
+.TagTable > .table-header {
+    display: flex;
+    flex-direction: row;
+
+    width: 300px;
+
+    justify-content: space-between;
+
+    box-sizing: border-box;
+    padding: 10px 25px;
+    border-bottom: 1px solid black;
+
+}
+
+.TagTable > .table-header > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14pt;
+
+    width: 100px;
+}
+
+.TagTable > .TableCreateTagRow {
+    position: relative;
+    display: flex;
+    gap: 10px;
+
+    width: 300px;
+
+    justify-content: space-between;
+
+    box-sizing: border-box;
+    padding: 10px 25px;
+    border-bottom: 1px solid black;
+
+    margin-top: -10px;
+}
+
+.TagTable > .TableCreateTagRow > button {
+    position: absolute;
+    right: -20px;
+    height: 30px;
+    width: 30px;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border: none;
+
+}
+
+.TagTable > .TableCreateTagRow > input {
+    display: flex;
+
+    width: 100px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+
+    justify-content: center;
+    padding: 5px;
+}
+
+.TagTable > .tag-row-wrapper {
+    width: 320px;
+    margin-right: -20px;
+    height: 600px;
+    overflow:hidden;
+}
+
+.TagTable > .tag-row-wrapper > .scroller {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 340px;
+    margin-right: -40px;
+    height: 600px;
+    overflow-y:scroll;
+    overflow-x: hidden;
+}
+
+.TagTable > .tag-row-wrapper > .scroller > .TableRow {
+    display: flex;
+    flex-direction: row;
+    width: 300px;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 0 25px;
+    gap: 10px;
+    position: relative;
+}
+
+.TagTable > .tag-row-wrapper > .scroller > .TableRow > input {
+    width: 100px;
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+.TagTable > .tag-row-wrapper > .scroller > .TableRow > input::placeholder {
+    color: black;
+}
+
+.TagTable > .tag-row-wrapper > .scroller > .TableRow > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+}
+
+.TagTable > .tag-row-wrapper > .scroller > .TableRow > button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border: none;
+
+    position: absolute;
+    right: -20px;
+    height: 30px;
+    width: 30px;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+
+}
+
+.error {
+    background: rgba(255, 0, 0, 0.2);
+}

@@ -1,0 +1,97 @@
+.UserTagsModal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+
+    width: 100%;
+    height: 100%;
+
+    top:0;
+    margin: auto;
+
+    background: rgba(0, 0, 0, 0.5)
+}
+
+.UserTagsModal > .user-tags {
+    width: 800px;
+    height: 800px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    box-sizing: border-box;
+    border: 2px solid black;
+
+    padding-bottom: 30px;
+
+    background: white;
+
+}
+
+.UserTagsModal > .user-tags > h3 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 700px;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 20pt;
+    box-sizing: border-box;
+    margin: 10px 0;
+    border-bottom: 1px solid black;
+    padding-bottom: 10px;
+
+    user-select: none;
+
+}
+
+.UserTagsModal > .user-tags > .tag-table {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    width: 700px;
+    height: 800px;
+
+    overflow-y: auto;
+}
+
+.UserTagsModal > .user-tags > .tag-table > .column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    height: 100%;
+    flex: 1;
+
+
+}
+
+.UserTagsModal > .user-tags > .tag-table > .column:first-child {
+    box-sizing: border-box;
+    border-right: 1px solid black;
+}
+
+.UserTagsModal > .user-tags > .tag-table > .column > h4 {
+    box-sizing: border-box;
+    margin: 0;
+    padding-top: 10px;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 18pt;
+
+    user-select: none;
+}
+
+.UserTagsModal > .user-tags > .tag-table > .column > div {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 16pt;
+
+    user-select: none;
+}

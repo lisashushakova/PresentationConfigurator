@@ -1,0 +1,175 @@
+.SelectPresentationMenu {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+
+    gap: 10px;
+
+    width: 500px;
+    height: 700px;
+
+    background: white;
+    box-sizing: border-box;
+    border: 1px solid black;
+    border-left: none;
+
+    padding: 10px 20px;
+
+    position: absolute;
+    left: 0;
+    bottom: -700px;
+
+    overflow-y: auto;
+}
+
+.SelectPresentationMenu > .pres-search {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+
+    box-sizing: border-box;
+    border-bottom: 2px solid black;
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+}
+
+.SelectPresentationMenu > .pres-search > div {
+    display: flex;
+    padding-left: 20px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 15px;
+}
+
+.SelectPresentationMenu > .pres-search > div > input {
+    height: 20px;
+    width: 200px;
+}
+
+.SelectPresentationMenu > .pres-search > h3 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 18pt;
+
+    align-self: flex-start;
+    margin: 0;
+    margin-bottom: 10px;
+    padding: 0;
+}
+
+
+.SelectPresentationMenu > .pres-search > div > .radio-wrapper {
+    height: 20px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+}
+
+.SelectPresentationMenu > .pres-search > div > .radio-wrapper > input {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+.SelectPresentationMenu > .loading {
+    width: 100%;
+    height: 80%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 20pt;
+}
+
+.SelectPresentationMenu > button{
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+}
+
+.SelectPresentationMenu > button > img {
+    aspect-ratio: 1;
+    width: 30px;
+}
+
+.MenuObject {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.MenuObject > div {
+    padding-left: 20px;
+}
+
+.MenuObject h3, h4, h5 {
+    margin: 0;
+}
+
+.MenuObject.root-folder {
+    box-sizing: border-box;
+    border-bottom: 1px solid black;
+    padding-bottom: 10px;
+}
+
+.MenuObject.root-folder > h3 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 18pt;
+    margin-bottom: 5px;
+}
+
+.MenuObject.folder {
+    margin-bottom: 5px;
+}
+
+.MenuObject.folder > h4 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 16pt;
+}
+
+.MenuObject.presentation > h5 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 14pt;
+}
+
+.MenuObject.presentation > h5:hover {
+    color: red;
+}
+
+.MenuObject.presentation.created {
+    animation: color-change-created 1s infinite alternate;
+    pointer-events: none;
+}
+
+.MenuObject.presentation.modified {
+    animation: color-change-modified 1s infinite alternate;
+    pointer-events: none;
+}
+
+
+@keyframes color-change-created {
+    0% { color: black; }
+    100% { color: rgb(0, 192, 0); }
+}
+
+@keyframes color-change-modified {
+    0% { color: black; }
+    100% { color: rgb(0, 128, 255); }
+}

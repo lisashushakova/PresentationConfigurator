@@ -1,0 +1,98 @@
+.TagView {
+    flex: 1;
+    display: flex;
+
+    flex-direction: column;
+}
+
+.TagView > .toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+
+    height: 40px;
+    width: 100%;
+
+    box-sizing: border-box;
+    border-bottom: 1px solid black;
+}
+
+.TagView > .toolbar > button {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 270px;
+
+    background: white;
+
+    box-sizing: border-box;
+    border: none;
+    border-right: 1px solid black;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14pt;
+
+    position: relative;
+}
+
+.TagView > .body {
+    flex: 1;
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.TagView > .body > div {
+    box-sizing: border-box;
+    border-right: 1px solid black;
+}
+
+.TagView > .body > .pres-view > .pres-name {
+
+    width: 300px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+    box-sizing: border-box;
+    margin-top: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid black;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 18pt;
+}
+
+.TagView > .body > .pres-view {
+    flex: 1;
+    height: 870px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+
+    gap: 40px;
+
+    overflow-y: auto;
+    padding-bottom: 40px;
+}
+
+.TagView > .body > .slide-view {
+    flex: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.TagView > .body > .tag-info {
+    flex: 1;
+}
+

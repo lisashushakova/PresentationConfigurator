@@ -1,0 +1,91 @@
+.BuildView {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+
+}
+
+.BuildView > .toolbar {
+    width: 100%;
+    height: 40px;
+
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    box-sizing: border-box;
+    border-bottom: 1px solid black;
+}
+
+.BuildView > .toolbar > button {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    height: 100%;
+    width: 270px;
+
+    background: white;
+
+    box-sizing: border-box;
+    border: none;
+    border-right: 1px solid black;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14pt;
+}
+
+.BuildView > .body {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.BuildView > .body > .SlidePoolBlock {
+    flex: 1;
+    box-sizing: border-box;
+    border-right: 1px solid black;
+}
+
+.BuildView > .body > .controls {
+    width: 90px;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.BuildView > .body > .controls > button {
+    aspect-ratio: 1;
+    width: 50px;
+    box-sizing: border-box;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border: none;
+}
+
+.BuildView > .body > .controls > button > img {
+    aspect-ratio: 1;
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.BuildView > .body > .PresentationPreviewBlock {
+    flex: 1;
+    box-sizing: border-box;
+    border-left: 1px solid black;
+}

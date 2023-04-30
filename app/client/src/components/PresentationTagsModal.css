@@ -1,0 +1,50 @@
+.PresentationTagsModal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+    left:0;
+
+    width: 100%;
+    height: 100%;
+
+    top:0;
+    margin: auto;
+
+    background: rgba(0, 0, 0, 0.5)
+}
+
+.PresentationTagsModal > .presentation-tags > h3 {
+    display: flex;
+    justify-content: center;
+
+    width: 600px;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 20pt;
+    box-sizing: border-box;
+
+    padding: 10px;
+    margin: 0 0 0 10px;
+    border-bottom: 1px solid black;
+
+    user-select: none;
+}
+
+.PresentationTagsModal > .presentation-tags {
+    width: 800px;
+    height: 800px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    box-sizing: border-box;
+    border: 2px solid black;
+
+    padding-bottom: 30px;
+
+    background: white;
+}

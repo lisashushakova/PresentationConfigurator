@@ -1,0 +1,149 @@
+.FolderPreferencesModal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+
+    width: 100%;
+    height: 100%;
+
+    top:0;
+    margin: auto;
+
+    background: rgba(0, 0, 0, 0.5)
+}
+
+.FolderPreferencesModal > .folder-preferences {
+    width: 1100px;
+    height: 800px;
+
+    background: white;
+    box-sizing: border-box;
+    border: 2px solid black;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.FolderPreferencesModal > .folder-preferences > h3 {
+    position: relative;
+
+    width: 800px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    box-sizing: border-box;
+    margin-top: 10px;
+    padding: 10px;
+    border-bottom: 1px solid black;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 20pt;
+}
+
+.FolderPreferencesModal > .folder-preferences > h3 > button {
+    position: absolute;
+    right: 20px;
+    border: none;
+    background: white;
+}
+
+.FolderPreferencesModal > .folder-preferences > h3 > button > img {
+    aspect-ratio: 1;
+    width: 30px;
+}
+
+.FolderPreferencesModal > .folder-preferences > h4 {
+    width: 800px;
+
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    box-sizing: border-box;
+
+    padding-bottom: 10px;
+    padding-left: 20px;
+    margin-bottom: 20px;
+
+    border-bottom: 1px solid black;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16pt;
+}
+
+.FolderPreferencesModal > .folder-preferences > .folder-list {
+    width: 800px;
+    height: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    column-gap: 40px;
+    row-gap: 25px;
+
+    justify-content: flex-start;
+    align-items: flex-start;
+
+}
+
+.FolderPreferencesModal > .folder-preferences > button {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14pt;
+
+    background: white;
+
+    box-sizing: border-box;
+    padding: 5px 20px;
+    margin: 20px;
+    border: 1px solid black;
+}
+
+.FolderPreferencesModal > .folder-preferences > button:hover {
+    background: lightgray;
+}
+
+.FolderPreferencesModal > .folder-preferences > .loading {
+    width: 100%;
+    height: 80%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 20pt;
+}
+
+.Folder {
+    width: 120px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-items: start;
+    align-items: center;
+}
+
+.Folder > img {
+    width: 120px;
+}
+
+.Folder > .folder-name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 12pt;
+}

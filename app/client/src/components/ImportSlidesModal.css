@@ -1,0 +1,118 @@
+.ImportSlidesModal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+    left: -30px;
+    right:-30px;
+
+    width: 100%;
+    height: 100%;
+
+    top:0;
+    margin: auto;
+
+    background: rgba(0, 0, 0, 0.5)
+}
+
+.ImportSlidesModal > .import-slides {
+    width: 600px;
+    height: 800px;
+
+    background: white;
+    box-sizing: border-box;
+    border: 2px solid black;
+
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.ImportSlidesModal > .import-slides > div {
+    display: flex;
+
+    width: 400px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10px;
+
+    box-sizing: border-box;
+    padding-bottom: 15px;
+    border-bottom: 1px solid black;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 12pt;
+}
+
+.ImportSlidesModal h3 {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 20pt;
+    margin: 0;
+}
+
+.ImportSlidesModal > .import-slides > div > button {
+    width: 150px;
+    background: white;
+    border: 1px solid black;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 12pt;
+    align-self: center;
+}
+
+.ImportSlidesModal > .import-slides > div > input {
+    width: 80%;
+    height: 20px;
+    align-self: center;
+}
+
+.ImportSlidesModal > .import-slides > div > .presentation-list {
+    width: 350px;
+    max-height: 160px;
+    align-self: center;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    box-sizing: border-box;
+    padding: 10px 5px;
+
+    border: 1px solid rgba(0, 0, 0, 0.5)
+}
+
+.ImportSlidesModal > .import-slides > div > .radio-wrapper {
+    box-sizing: border-box;
+    padding-left: 20px;
+}
+
+.ImportSlidesModal > .import-slides > button {
+    background: white;
+    padding: 5px 10px;
+    border: 1px solid black;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 14pt;
+}
+
+.ImportSlidesModal > .import-slides > button:hover {
+    background: lightgreen;
+}
+
+.ImportSlidesModal > .import-slides > div > .loading {
+    align-self: center;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14pt;
+}
+
