@@ -15,8 +15,8 @@
 }
 
 .UserSettingsModal > .user-settings {
-    width: 800px;
-    height: 600px;
+    width: 60vh;
+    height: 60vh;
 
     background: white;
 
@@ -25,7 +25,7 @@
 
     align-items: center;
 
-    gap: 10px;
+    gap: 2vh;
 
     box-sizing: border-box;
     border: 2px solid black
@@ -35,15 +35,15 @@
     display: flex;
     justify-content: center;
 
-    width: 600px;
+    width: 50vh;
 
     font-family: 'Inter', sans-serif;
     font-weight: 500;
-    font-size: 20pt;
+    font-size: 3vh;
     box-sizing: border-box;
 
-    padding: 10px;
-    margin: 0 0 0 10px;
+    padding: 1vh;
+    margin: 0 0 0 1vh;
     border-bottom: 1px solid black;
 
     user-select: none;
@@ -54,18 +54,18 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    width: 600px;
+    width: 50vh;
 
     box-sizing: border-box;
-    padding-left: 20px;
+    padding-left: 2vh;
 
-    gap: 10px;
+    gap: 1vh;
 }
 
 .UserSettingsModal > .user-settings > .settings-wrapper > div {
     font-family: 'Inter', sans-serif;
     font-weight: 500;
-    font-size: 16pt;
+    font-size: 2vh;
     box-sizing: border-box;
 
     user-select: none;

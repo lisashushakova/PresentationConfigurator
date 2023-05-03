@@ -149,16 +149,20 @@ const FolderPreferencesModal = (props) => {
                         <img src={reloadIcon}/>
                     </button>
                 </h3>
-                <h4>{path}</h4>
+
                 {userFileTreeLoaded ?
-                    <div className='folder-list'>
-                        {folders.map(folder => <Folder
-                            folderObj={folder}
-                            setFolders={setFolders}
-                            setFolderStack={setFolderStack}
-                            updateMarks={updateMarks}
-                        />)}
-                    </div>
+                    <>
+                        <h4>{path}</h4>
+                        <div className='folder-list'>
+                            {folders.map(folder => <Folder
+                                folderObj={folder}
+                                setFolders={setFolders}
+                                setFolderStack={setFolderStack}
+                                updateMarks={updateMarks}
+                            />)}
+                        </div>
+                    </>
+
                     :
                     <div className='loading'>
                         Загрузка...

@@ -1,9 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react'
 import './BuildPresentationModal.css'
-import defaultFolderIcon from "../icons/folder.svg";
-import markedFolderIcon from "../icons/folder-full-pref.svg";
-import hasMarkedChildFolderIcon from "../icons/folder-sub-pref.svg";
-import reloadIcon from "../icons/refresh.svg";
 import SelectFolderModal from "./SelectFolderModal";
 
 
@@ -117,6 +113,7 @@ const BuildPresentationModal = (props) => {
                                 </div>
                                 <button onClick={() => {
                                     setBuildState(BuildState.BUILD_WAIT)
+                                    console.log(presName)
                                     fetch('http://localhost:8000/presentations/build', {
                                         method: 'POST',
                                         credentials: "include",
@@ -124,8 +121,8 @@ const BuildPresentationModal = (props) => {
                                             'Content-Type': 'application/json'
                                         },
                                         body: JSON.stringify({
-                                            name: presName,
-                                            save_to: saveTo.id,
+                                            name: presName.length > 0 ? presName : 'New presentation',
+                                            save_to: saveTo ? saveTo.id : null,
                                             style_template: selectedTemplate ? selectedTemplate.id : null,
                                             ratio: presentationRatio,
                                             slides: props.previewSlides
@@ -143,7 +140,7 @@ const BuildPresentationModal = (props) => {
                                 <div>
                                     <button onClick={() => {
                                     fetch('http://localhost:8000/presentations/get-built-presentation?' +
-                                        new URLSearchParams({pres_name: presName}), {
+                                        new URLSearchParams({pres_name: presName.length > 0 ? presName : 'New presentation'}), {
                                             credentials: "include"
                                         })
                                         .then(res => res.blob())
@@ -151,7 +148,7 @@ const BuildPresentationModal = (props) => {
                                             const blobURL = window.URL.createObjectURL(blob)
                                             const a = document.createElement('a')
                                             a.href = blobURL
-                                            a.download = presName
+                                            a.download = presName.length > 0 ? presName : 'New presentation'
                                             a.click()
                                             a.remove()
                                             window.URL.revokeObjectURL(blobURL)

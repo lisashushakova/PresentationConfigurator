@@ -9,7 +9,6 @@ const UserSettingsModal = (props) => {
                 <h3>Настройки</h3>
                 <div className='settings-wrapper'>
                     <div onClick={() => props.setShowFolderPreferences(true)}>Выбор папок</div>
-                    <div>Еще одна настройка</div>
                 </div>
 
             </div>

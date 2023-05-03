@@ -1,36 +1,51 @@
+.SlideCard {
+    position: relative;
+}
+
+.SlideCard > .label {
+    width: 5vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: absolute;
+    top: 0;
+    left: -7.5vw;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 5vh;
+}
 
 .slide-card-4-3, .slide-card-16-9 {
     display: flex;
     flex-direction: row;
 
-    gap: 20px;
+    gap: 5vh;
 
     font-family: 'Inter', sans-serif;
     font-weight: 500;
-    font-size: 14pt;
+    font-size: 4em;
+
 
 }
 
 .slide-card-4-3 > img {
     aspect-ratio: calc(4/3);
-    height: 160px;
+    height: 40vh;
 
     box-sizing: border-box;
-    border-radius: 10px;
+    border-radius: 2vh;
     border: 2px solid black
 }
 
 .slide-card-16-9 > img {
     aspect-ratio: calc(16/9);
-    height: 160px;
+    height: 40vh;
 
     box-sizing: border-box;
-    border-radius: 10px;
-    border: 2px solid black
-}
-
-.expanded > img {
-    height: 550px;
+    border-radius: 2vh;
+    border: 2px solid black;
 }
 
 .selected > img {

@@ -53,9 +53,15 @@ class GoogleDriveHandler:
             while done is False:
                 status, done = downloader.next_chunk()
 
+            if not os.path.exists(os.path.join(SERVER_ROOT, f"presentation_processing/temp")):
+                os.mkdir(os.path.join(SERVER_ROOT, f"presentation_processing/temp"))
+
             pres_dir_path = os.path.join(SERVER_ROOT, f"presentation_processing/temp/{presentation.get('id')}")
-            os.mkdir(pres_dir_path)
-            with open(f"presentation_processing/temp/{presentation.get('id')}/{presentation.get('id')}.pptx", "wb") as f:
+            if not os.path.exists(pres_dir_path):
+                os.mkdir(pres_dir_path)
+
+            with open(f"presentation_processing/temp/{presentation.get('id')}/{presentation.get('id')}.pptx",
+                      "wb") as f:
                 f.write(file.getvalue())
 
         except HttpError as error:
@@ -73,7 +79,7 @@ class GoogleDriveHandler:
         file_metadata = {
             'name': f'{name}.pptx',
         }
-        if save_to != '':
+        if save_to is not None:
             file_metadata['parents'] = [save_to]
         media = MediaFileUpload(
             os.path.join(SERVER_ROOT, f"presentation_processing/built/{user_id}/{name}.pptx"),

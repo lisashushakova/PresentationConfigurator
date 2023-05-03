@@ -10,7 +10,7 @@
 
 .BuildView > .toolbar {
     width: 100%;
-    height: 40px;
+    height: 4vh;
 
     display: flex;
     justify-content: flex-start;
@@ -27,7 +27,7 @@
     align-items: center;
 
     height: 100%;
-    width: 270px;
+    width: 20vw;
 
     background: white;
 
@@ -37,7 +37,7 @@
 
     font-family: 'Inter', sans-serif;
     font-weight: 500;
-    font-size: 14pt;
+    font-size: 2vh;
 }
 
 .BuildView > .body {
@@ -54,19 +54,19 @@
 }
 
 .BuildView > .body > .controls {
-    width: 90px;
+    width: 10vh;
     height: 100%;
 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 20px;
+    gap: 2vh;
 }
 
 .BuildView > .body > .controls > button {
     aspect-ratio: 1;
-    width: 50px;
+    width: 5vh;
     box-sizing: border-box;
     padding: 0;
     display: flex;
@@ -78,7 +78,7 @@
 
 .BuildView > .body > .controls > button > img {
     aspect-ratio: 1;
-    width: 50px;
+    width: 5vh;
     display: flex;
     justify-content: center;
     align-items: center;

@@ -10,11 +10,12 @@
     flex-direction: row;
     justify-content: flex-start;
 
-    height: 40px;
+    height: 4vh;
     width: 100%;
 
     box-sizing: border-box;
     border-bottom: 1px solid black;
+
 }
 
 .TagView > .toolbar > button {
@@ -23,7 +24,7 @@
     justify-content: center;
     align-items: center;
 
-    width: 270px;
+    width: 20vw;
 
     background: white;
 
@@ -33,7 +34,7 @@
 
     font-family: 'Inter', sans-serif;
     font-weight: 500;
-    font-size: 14pt;
+    font-size: 2vh;
 
     position: relative;
 }
@@ -51,9 +52,9 @@
     border-right: 1px solid black;
 }
 
-.TagView > .body > .pres-view > .pres-name {
+.TagView > .body > .pres-view > h3 {
 
-    width: 300px;
+    width: 40vw;
 
     display: flex;
     justify-content: center;
@@ -61,38 +62,31 @@
 
 
     box-sizing: border-box;
-    margin-top: 20px;
+    margin: 0;
     padding-bottom: 10px;
     border-bottom: 1px solid black;
 
     font-family: 'Inter', sans-serif;
     font-weight: 500;
-    font-size: 18pt;
+    font-size: 4vh;
 }
 
 .TagView > .body > .pres-view {
-    flex: 1;
-    height: 870px;
+    flex: 5;
+    height: 88.5vh;
     display: flex;
     flex-direction: column;
     align-items: center;
 
+    padding: 5vh;
 
-    gap: 40px;
+    gap: 5vh;
 
     overflow-y: auto;
-    padding-bottom: 40px;
-}
-
-.TagView > .body > .slide-view {
-    flex: 3;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 
 .TagView > .body > .tag-info {
-    flex: 1;
+    flex: 2;
 }
 

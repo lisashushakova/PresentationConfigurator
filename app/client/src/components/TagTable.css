@@ -3,47 +3,50 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 10px;
-    padding-top: 20px;
+    gap: 1vh;
+    padding-top: 2vh;
 }
 
 .TagTable > .table-header {
     display: flex;
     flex-direction: row;
 
-    width: 300px;
+    width: 20vw;
 
-    justify-content: space-between;
-
+    justify-content: center;
+    gap: 2vw;
     box-sizing: border-box;
-    padding: 10px 25px;
+    padding: 1vh 1vw;
     border-bottom: 1px solid black;
 
 }
 
 .TagTable > .table-header > div {
+
+    width: 7.5vw;
+
+
     display: flex;
     justify-content: center;
     align-items: center;
 
     font-family: 'Inter', sans-serif;
     font-weight: 500;
-    font-size: 14pt;
+    font-size: 2vh;
 
-    width: 100px;
 }
 
 .TagTable > .TableCreateTagRow {
     position: relative;
     display: flex;
-    gap: 10px;
+    gap: 2vw;
 
-    width: 300px;
+    width: 20vw;
 
-    justify-content: space-between;
+    justify-content: center;
 
     box-sizing: border-box;
-    padding: 10px 25px;
+    padding: 1vh 1vw;
     border-bottom: 1px solid black;
 
     margin-top: -10px;
@@ -51,9 +54,9 @@
 
 .TagTable > .TableCreateTagRow > button {
     position: absolute;
-    right: -20px;
-    height: 30px;
-    width: 30px;
+    aspect-ratio: 1;
+    right: -1.5vw;
+    width: 3vh;
     top: 0;
     bottom: 0;
     margin: auto 0;
@@ -66,31 +69,41 @@
 
 }
 
+.TagTable > .TableCreateTagRow > button > img {
+    aspect-ratio: 1;
+    width: 3vh
+
+}
+
 .TagTable > .TableCreateTagRow > input {
     display: flex;
 
-    width: 100px;
+    width: 7.5vw;
     box-sizing: border-box;
     border: 1px solid rgba(0, 0, 0, 0.5);
 
     justify-content: center;
-    padding: 5px;
+    padding: 0.5vh;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 1.5vh;
 }
 
+
 .TagTable > .tag-row-wrapper {
-    width: 320px;
-    margin-right: -20px;
-    height: 600px;
+    width: 22vw;
+    height: 70vh;
     overflow:hidden;
 }
 
 .TagTable > .tag-row-wrapper > .scroller {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    width: 340px;
-    margin-right: -40px;
-    height: 600px;
+    gap: 1.5vh;
+    width: 25vw;
+
+    height: 70vh;
     overflow-y:scroll;
     overflow-x: hidden;
 }
@@ -98,18 +111,21 @@
 .TagTable > .tag-row-wrapper > .scroller > .TableRow {
     display: flex;
     flex-direction: row;
-    width: 300px;
-    justify-content: space-between;
+    width: 20vw;
+    justify-content: center;
     box-sizing: border-box;
-    padding: 0 25px;
-    gap: 10px;
+    gap: 2vw;
     position: relative;
 }
 
 .TagTable > .tag-row-wrapper > .scroller > .TableRow > input {
-    width: 100px;
+    width: 7.5vw;
     box-sizing: border-box;
-    padding: 5px;
+    padding: 0.5vh 0.5vh 0.5vh 1vh;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 1.5vh;
 }
 
 .TagTable > .tag-row-wrapper > .scroller > .TableRow > input::placeholder {
@@ -120,7 +136,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100px;
+    width: 7.5vw;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 2vh;
 }
 
 .TagTable > .tag-row-wrapper > .scroller > .TableRow > button {
@@ -131,13 +151,19 @@
     border: none;
 
     position: absolute;
-    right: -20px;
-    height: 30px;
-    width: 30px;
+    right: -2vh;
     top: 0;
     bottom: 0;
     margin: auto 0;
 
+    aspect-ratio: 1;
+    width: 3vh;
+
+}
+
+.TagTable > .tag-row-wrapper > .scroller > .TableRow > button > img {
+    aspect-ratio: 1;
+    width: 2vh
 }
 
 .error {

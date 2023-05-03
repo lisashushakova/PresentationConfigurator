@@ -1,2 +1,2 @@
-/app/server/main/auth/
-/app/server/main/ssl/
+/app/client/package-lock.json
+/app/server/main/external_services/google/oauth2.keys.json

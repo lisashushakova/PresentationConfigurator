@@ -198,6 +198,9 @@ class PresentationProcessHandler:
                         slide.layout_slide.master_slide = new_master
                     presentation.masters.remove_at(0)
 
+            if not os.path.exists(f"presentation_processing/built"):
+                os.mkdir(f"presentation_processing/built")
+
             if not os.path.exists(f"presentation_processing/built/{user_id}"):
                 os.mkdir(f"presentation_processing/built/{user_id}")
 

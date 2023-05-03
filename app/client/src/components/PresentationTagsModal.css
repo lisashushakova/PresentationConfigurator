@@ -15,27 +15,9 @@
     background: rgba(0, 0, 0, 0.5)
 }
 
-.PresentationTagsModal > .presentation-tags > h3 {
-    display: flex;
-    justify-content: center;
-
-    width: 600px;
-
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    font-size: 20pt;
-    box-sizing: border-box;
-
-    padding: 10px;
-    margin: 0 0 0 10px;
-    border-bottom: 1px solid black;
-
-    user-select: none;
-}
-
 .PresentationTagsModal > .presentation-tags {
-    width: 800px;
-    height: 800px;
+    width: 60vh;
+    height: 70vh;
 
     display: flex;
     flex-direction: column;
@@ -47,4 +29,30 @@
     padding-bottom: 30px;
 
     background: white;
+}
+
+.PresentationTagsModal > .presentation-tags > h3 {
+    display: flex;
+    justify-content: center;
+
+    width: 40vh;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 3vh;
+    box-sizing: border-box;
+
+    padding: 10px;
+    margin: 0 0 0 10px;
+    border-bottom: 1px solid black;
+
+    user-select: none;
+}
+
+.PresentationTagsModal > .presentation-tags > .TagTable > .tag-row-wrapper {
+    height: 50vh;
+}
+
+.PresentationTagsModal > .presentation-tags > .TagTable > .tag-row-wrapper > .scroller {
+    height: 50vh;
 }

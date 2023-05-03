@@ -1,7 +1,5 @@
 import React from 'react'
 import './SlideCard.css'
-import image_4_3 from "../images/genshin-4-to-3.jpg";
-import image_16_9 from "../images/genshin-16-to-9.png";
 import {useEffect, useRef} from "react";
 
 const SlideRatio = {
@@ -47,7 +45,7 @@ const SlideCard = (props) => {
             }
 
         }}>
-            {props.expand ? null : props.slide.index + 1}
+            <div className='label'>{props.expand ? null : props.slide.index + 1}</div>
             <img src={imgSrc}/>
         </div>
     )

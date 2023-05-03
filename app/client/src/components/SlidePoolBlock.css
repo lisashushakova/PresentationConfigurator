@@ -1,11 +1,11 @@
 .SlidePoolBlock {
     display: flex;
-    height: 850px;
+    height: 88.5vh;
     flex-direction: column;
     box-sizing: border-box;
-    padding: 40px;
+    padding: 2vh;
     overflow-y: auto;
-    gap: 40px;
+    gap: 5vh;
 }
 
 .SlidePoolBlock > .PoolSlideCard {
@@ -13,7 +13,7 @@
     flex-direction: column;
     justify-content: center;
     align-self: center;
-    gap: 10px;
+    gap: 2vh;
 }
 
 .SlidePoolBlock > .PoolSlideCard > h5 {
@@ -22,22 +22,22 @@
     align-items: center;
     font-family: 'Inter', sans-serif;
     font-weight: 500;
-    font-size: 18pt;
+    font-size: 2vh;
 
 }
 
 .SlidePoolBlock > .PoolSlideCard > img.widescreen_16_to_9 {
     aspect-ratio: calc(16 / 9);
-    height: 300px;
+    height: 30vh;
     border: 2px solid black;
-    border-radius: 20px;
+    border-radius: 2vh;
 }
 
 .SlidePoolBlock > .PoolSlideCard > img.standard_4_to_3 {
     aspect-ratio: calc(4 / 3);
-    height: 300px;
+    height: 30vh;
     border: 2px solid black;
-    border-radius: 20px;
+    border-radius: 2vh;
 }
 
 .SlidePoolBlock > .PoolSlideCard > img.selected {

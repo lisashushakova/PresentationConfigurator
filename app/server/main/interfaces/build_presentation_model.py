@@ -11,7 +11,7 @@ class Slide(BaseModel):
 
 class BuildPresentationModel(BaseModel):
     name: str
-    save_to: str
+    save_to: Union[None, str]
     style_template: Union[None, str]
     ratio: str
     slides: List['Slide']

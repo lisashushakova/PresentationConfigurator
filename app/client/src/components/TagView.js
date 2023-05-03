@@ -155,8 +155,9 @@ const TagView = (props) => {
                 <button onClick={() => setShowPresentationTags(true)}>Теги презентации</button>
             </div>
             <div className='body'>
+
                 <div className='pres-view'>
-                    {selectedPresentation ? <div className='pres-name'>{selectedPresentation.name}</div> : null}
+                    {selectedPresentation ? <h3>{selectedPresentation.name}</h3> : null}
                     {selectedPresentationSlides.length > 0 ?
                         selectedPresentationSlides.map(slideObj =>
                             <SlideCard
@@ -166,9 +167,6 @@ const TagView = (props) => {
                         :
                         null
                     }
-                </div>
-                <div className='slide-view'>
-                    {selectedSlide ? <SlideCard slide={selectedSlide} expand={true}/> : null}
                 </div>
                 <div className='tag-info'>
                     {selectedSlide ?

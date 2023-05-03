@@ -4,7 +4,6 @@
     justify-content: center;
 
     position: absolute;
-    padding-left: -60px;
     width: 100%;
     height: 100%;
 
@@ -15,8 +14,8 @@
 }
 
 .SelectFolderModal > .select-folder {
-    width: 1100px;
-    height: 800px;
+    width: 90vh;
+    height: 80vh;
 
     background: white;
     box-sizing: border-box;
@@ -30,63 +29,52 @@
 .SelectFolderModal > .select-folder > h3 {
     position: relative;
 
-    width: 800px;
+    width: 70vh;
+    height: 5vh;
 
     display: flex;
     justify-content: center;
     align-items: center;
 
     box-sizing: border-box;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    padding: 10px;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+    padding: 1vh;
     border-bottom: 1px solid black;
 
     font-family: 'Inter', sans-serif;
     font-weight: 500;
-    font-size: 20pt;
+    font-size: 3vh;
 }
 
 .SelectFolderModal > .select-folder > h4 {
-    width: 800px;
-
+    width:70vh;
     display: flex;
     justify-content: flex-start;
     align-items: center;
 
     box-sizing: border-box;
 
-    padding-bottom: 10px;
-    padding-left: 20px;
-    margin-bottom: 20px;
+    padding-bottom: 1vh;
+    padding-left: 1.5vh;
+    margin-bottom: 1.5vh;
 
     border-bottom: 1px solid black;
 
     font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 16pt;
+    font-size: 2.5vh;
 }
 
-.SelectFolderModal > .select-folder > h3 > button {
-    position: absolute;
-    right: 20px;
-    border: none;
-    background: white;
-}
-
-.SelectFolderModal > .select-folder > h3 > button > img {
-    aspect-ratio: 1;
-    width: 30px;
-}
 
 .SelectFolderModal > .select-folder > .folder-list {
-    width: 800px;
+    width: 70vh;
     height: 100%;
 
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    column-gap: 40px;
-    row-gap: 25px;
+    column-gap: 2vh;
+    row-gap: 1vh;
 
     justify-content: flex-start;
     align-items: flex-start;
@@ -96,13 +84,13 @@
 .SelectFolderModal > .select-folder > div > button {
     font-family: 'Inter', sans-serif;
     font-weight: 500;
-    font-size: 14pt;
+    font-size: 2vh;
 
     background: white;
 
     box-sizing: border-box;
-    padding: 5px 20px;
-    margin: 20px;
+    padding: 1vh 2vw;
+    margin: 1vh;
     border: 1px solid black;
 }
 
@@ -120,12 +108,12 @@
 
     font-family: 'Inter', sans-serif;
     font-weight: 500;
-    font-size: 20pt;
+    font-size: 3vh;
 }
 
 .Folder {
-    width: 120px;
-    height: 150px;
+    width: 12.4vh;
+    height: 8vh;
     display: flex;
     flex-direction: column;
     justify-items: start;
@@ -133,7 +121,7 @@
 }
 
 .Folder > img {
-    width: 120px;
+    width: 12.4vh;
 }
 
 .Folder > .folder-name {
@@ -145,5 +133,5 @@
 
     font-family: 'Inter', sans-serif;
     font-weight: 500;
-    font-size: 12pt;
+    font-size: 2vh;
 }
