@@ -13,12 +13,11 @@ import ImportSlidesModal from "./components/ImportSlidesModal";
 import {wait} from "@testing-library/user-event/dist/utils";
 import {waitFor} from "@testing-library/react";
 
+export const AppMode = {
+    TAG_MARKUP: 0,
+    PRESENTATION_BUILD: 1
+}
 function App() {
-
-    const AppMode = {
-        TAG_MARKUP: 0,
-        PRESENTATION_BUILD: 1
-    }
 
     const [appMode, setAppMode] = useState(AppMode.TAG_MARKUP)
     const [userFileTree, setUserFileTree] = useState(null)
@@ -84,6 +83,7 @@ function App() {
             />
             <div className='content-wrapper'>
                 <AppSidebar
+                    appMode={appMode}
                     setTagMode={() => {
                         setAppMode(AppMode.TAG_MARKUP)
                     }}
@@ -117,3 +117,4 @@ function App() {
 }
 
 export default App;
+

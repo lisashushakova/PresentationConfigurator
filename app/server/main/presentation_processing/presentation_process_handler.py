@@ -43,7 +43,6 @@ class PresentationProcessHandler:
             presentation.Close()
             presentation = None
 
-
     def crop_presentations(self, presentations):
         presentations_ratio = []
 

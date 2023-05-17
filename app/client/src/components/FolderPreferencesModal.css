@@ -88,8 +88,10 @@
 
     display: grid;
     grid-template-columns: repeat(5, 1fr);
+    grid-auto-rows: 15vh;
     column-gap: 2vh;
     row-gap: 1vh;
+
 
     justify-content: flex-start;
     align-items: flex-start;
@@ -128,7 +130,7 @@
 
 .FolderPreferencesModal > .folder-preferences > .folder-list > .Folder {
     width: 12.4vh;
-    height: 8vh;
+    height: 3vh;
     display: flex;
     flex-direction: column;
     justify-items: start;

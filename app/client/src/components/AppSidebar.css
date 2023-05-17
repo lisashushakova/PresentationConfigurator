@@ -8,9 +8,9 @@
     box-sizing: border-box;
     border-right: 1px solid black;
 
-    gap:calc(20vh - 3vw);
+    gap:calc(25vh - 3vw);
 
-    padding: 20vh 0;
+    padding: 25vh 0;
 }
 
 .AppSidebar > button {
@@ -20,7 +20,7 @@
     align-items: center;
     border: none;
     height: 3vw;
-    width: 20vh;
+    width: 25vh;
     font-family: "Inter", sans-serif;
     font-weight: 500;
     font-size: 2vh;
@@ -32,3 +32,9 @@
 
 }
 
+.AppSidebar > button.selected {
+    background: lightgray;
+    box-sizing: border-box;
+    border: 1px solid black;
+    border-top: none;
+}

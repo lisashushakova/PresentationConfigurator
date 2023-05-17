@@ -20,6 +20,7 @@ const BuildView = (props) => {
 
     const moveSelected = () => {
         setPreviewSlides(prev => [...prev, ...selectedPoolSlides])
+        setSelectedPoolSlides([])
     }
 
 
@@ -33,7 +34,7 @@ const BuildView = (props) => {
                 <button onClick={() => setShowBuildPresentation(true)}>Собрать презентацию</button>
             </div>
             <div className='body'>
-                <SlidePoolBlock poolSlides={poolSlides} setSelectedPoolSlides={setSelectedPoolSlides}/>
+                <SlidePoolBlock poolSlides={poolSlides} selectedPoolSlides={selectedPoolSlides} setSelectedPoolSlides={setSelectedPoolSlides}/>
                 <div className='controls'>
                     <button onClick={moveAll}>
                         <img src={moveAllIcon}/>
@@ -50,6 +51,7 @@ const BuildView = (props) => {
                     userFileTree={props.userFileTree}
                     setShowImportSlides={setShowImportSlides}
                     setPoolSlides={setPoolSlides}
+                    setSelectedPoolSlides={setSelectedPoolSlides}
                 /> : null
             }
             {showBuildPresentation ?

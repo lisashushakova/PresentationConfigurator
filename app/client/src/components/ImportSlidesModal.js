@@ -124,6 +124,7 @@ const ImportSlidesModal = (props) => {
                     </div>
                 </div>
                 <button onClick={() => {
+                    props.setSelectedPoolSlides([])
                     fetch('http://localhost:8000/slides/by-filters', {
                         method: 'POST',
                         headers: {

@@ -152,7 +152,10 @@ const TagView = (props) => {
                             updateFiles={props.updateFiles}
                         /> : null}
                 </button>
-                <button onClick={() => setShowPresentationTags(true)}>Теги презентации</button>
+                {selectedPresentation
+                    ? <button onClick={() => setShowPresentationTags(true)}>Теги презентации</button>
+                    : null}
+
             </div>
             <div className='body'>
 

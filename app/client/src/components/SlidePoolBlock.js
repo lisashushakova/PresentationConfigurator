@@ -1,10 +1,16 @@
-import React, {useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import './SlidePoolBlock.css'
 
 const PoolSlideCard = (props) => {
 
     const [selected, setSelected] = useState(false)
     const ref = useRef()
+
+    useEffect(() => {
+        if (!(props.selectedPoolSlides.includes(props.slide))) {
+            ref.current.classList.remove('selected')
+        }
+    }, [props.selectedPoolSlides])
 
     return (
         <div className='PoolSlideCard'>
@@ -30,7 +36,9 @@ const SlidePoolBlock = (props) => {
     return(
         <div className='SlidePoolBlock'>
             {props.poolSlides.map(slide =>
-                <PoolSlideCard slide={slide} setSelectedPoolSlides={props.setSelectedPoolSlides}/>)}
+                <PoolSlideCard key={slide.id} slide={slide}
+                               selectedPoolSlides={props.selectedPoolSlides}
+                               setSelectedPoolSlides={props.setSelectedPoolSlides}/>)}
         </div>
     )
 }

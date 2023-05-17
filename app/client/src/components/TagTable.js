@@ -31,7 +31,7 @@ const TableCreateTagRow = (props) => {
             <input ref={tagNameRef} value={tagName} type='text' placeholder='tag' onChange={(e) => {
                 setTagName(e.target.value)
 
-                if (!/^[a-zA-Z]+[a-zA-Z0-9]*$/.test(e.target.value)) {
+                if (!/^[a-zа-яA-ZА-Я]+[a-zа-яA-ZА-Я0-9]*$/.test(e.target.value)) {
                     e.target.classList.add('error')
                 } else {
                     e.target.classList.remove('error')
