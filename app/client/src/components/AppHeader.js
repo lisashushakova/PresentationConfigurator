@@ -60,7 +60,7 @@ const AppHeader = (props) => {
                 <button><img
                     src={settingsIcon}
                     alt={"Settings"}
-                    onClick={() => {props.setShowUserSettings(true)}}/>
+                    onClick={() => {props.setShowFolderPreferences(true)}}/>
                 </button>
 
                 <button

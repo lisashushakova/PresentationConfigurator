@@ -26,7 +26,7 @@ class PresentationProcessHandler:
         else:
             raise AttributeError("Unknown slide ratio")
 
-    def __crop_presentation(self, presentation, win32com_app_instance):
+    def crop_presentation(self, presentation, win32com_app_instance):
         pres_path = os.path.join(SERVER_ROOT, f'presentation_processing/temp/{presentation.get("id")}/{presentation.get("id")}.pptx')
         img_path = os.path.join(SERVER_ROOT, f'presentation_processing/temp/{presentation.get("id")}/images')
         os.mkdir(img_path)
@@ -53,7 +53,7 @@ class PresentationProcessHandler:
             ApplicationPPTX = win32com.client.Dispatch("PowerPoint.Application")
 
             for result in self.pool.starmap(
-                    self.__crop_presentation, [(presentation, ApplicationPPTX) for presentation in presentations]):
+                    self.crop_presentation, [(presentation, ApplicationPPTX) for presentation in presentations]):
                 presentations_ratio.append(result)
 
             ApplicationPPTX.Quit()
@@ -79,7 +79,7 @@ class PresentationProcessHandler:
             presentations_text.append(result)
         return presentations_text
 
-    def __create_style_template(self, presentation, win32com_app_instance):
+    def create_style_template(self, presentation, win32com_app_instance):
         pres_path = os.path.join(
             SERVER_ROOT,
             f"presentation_processing/temp/{presentation.get('id')}/{presentation.get('id')}.pptx"
@@ -132,13 +132,13 @@ class PresentationProcessHandler:
             pythoncom.CoInitializeEx(0)
             ApplicationPPTX = win32com.client.Dispatch("PowerPoint.Application")
 
-            style_path = f"presentation_processing/styles/temp"
+            style_path = os.path.join(SERVER_ROOT, "presentation_processing/styles/temp")
             if not os.path.exists(style_path):
                 os.mkdir(style_path)
 
             style_templates = []
 
-            for result in self.pool.starmap(self.__create_style_template,
+            for result in self.pool.starmap(self.create_style_template,
                                             [(presentation, ApplicationPPTX) for presentation in presentations]):
                 style_templates.append(result)
 
@@ -197,11 +197,11 @@ class PresentationProcessHandler:
                         slide.layout_slide.master_slide = new_master
                     presentation.masters.remove_at(0)
 
-            if not os.path.exists(f"presentation_processing/built"):
-                os.mkdir(f"presentation_processing/built")
+            if not os.path.exists(os.path.join(SERVER_ROOT, f"presentation_processing/built")):
+                os.mkdir(os.path.join(SERVER_ROOT, f"presentation_processing/built"))
 
-            if not os.path.exists(f"presentation_processing/built/{user_id}"):
-                os.mkdir(f"presentation_processing/built/{user_id}")
+            if not os.path.exists(os.path.join(SERVER_ROOT, f"presentation_processing/built/{user_id}")):
+                os.mkdir(os.path.join(SERVER_ROOT, f"presentation_processing/built/{user_id}"))
 
             presentation.save(
                 os.path.join(SERVER_ROOT, f'presentation_processing/built/{user_id}/{name}.pptx'),

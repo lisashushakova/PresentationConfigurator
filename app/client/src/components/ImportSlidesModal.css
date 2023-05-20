@@ -78,7 +78,10 @@
     font-family: 'Inter', sans-serif;
     font-weight: 500;
     font-size: 2vh;
+
+    padding-left: 1vh;
 }
+
 
 .ImportSlidesModal > .import-slides > div > .presentation-list {
     width: 35vh;

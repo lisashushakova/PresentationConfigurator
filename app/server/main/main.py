@@ -1,4 +1,5 @@
 import os
+import re
 import time
 from multiprocessing import Queue
 from multiprocessing.pool import ThreadPool
@@ -9,7 +10,7 @@ from fastapi import Cookie
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import Response, FileResponse
 
-from app.definitions import ROOT, SERVER_ROOT
+from app.definitions import ROOT, SERVER_ROOT, db_user, db_password, db_url, db_name, api_origin, frontend_origin
 from app.server.main.database.database_handler import DatabaseHandler, Users
 from app.server.main.external_services.google.google_auth_handler import GoogleAuthHandler
 from app.server.main.external_services.google.google_drive_handler import GoogleDriveHandler
@@ -25,14 +26,16 @@ from app.server.main.interfaces.presentations_list_model import PresentationsLis
 from app.server.main.interfaces.tags_list_model import TagListModel
 from app.server.main.interfaces.user_info_model import UserInfoModel
 from app.server.main.presentation_processing.presentation_process_handler import PresentationProcessHandler
-
+from dotenv import load_dotenv
 from utils import utils
+
+load_dotenv()
 
 app = fastapi.FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8000", "http://localhost:3000"],
+    allow_origins=[api_origin, frontend_origin],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -43,10 +46,10 @@ pool = ThreadPool(processes=20)
 
 db_handler = DatabaseHandler(
     pool=pool,
-    user="admin",
-    password="root",
-    host="localhost:5000",
-    db="pres_conf_db"
+    user=db_user,
+    password=db_password,
+    host=db_url,
+    db=db_name
 )
 
 db_handler.create_db()
@@ -267,4 +270,5 @@ def remove_slide_link(presentation_id, tag_name, pres_conf_user_state: str = Coo
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="localhost", port=8000, log_level="info")
+    m = re.match(r'http://(?P<host>.*):(?P<port>.*)', api_origin)
+    uvicorn.run("main:app", host=m.group('host'), port=int(m.group('port')), log_level="info")

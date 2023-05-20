@@ -10,7 +10,7 @@
     flex-direction: row;
     justify-content: flex-start;
 
-    height: 4vh;
+    min-height: 4vh;
     width: 100%;
 
     box-sizing: border-box;

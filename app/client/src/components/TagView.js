@@ -157,31 +157,34 @@ const TagView = (props) => {
                     : null}
 
             </div>
-            <div className='body'>
+            {selectedPresentation ?
+                <div className='body'>
 
-                <div className='pres-view'>
-                    {selectedPresentation ? <h3>{selectedPresentation.name}</h3> : null}
-                    {selectedPresentationSlides.length > 0 ?
-                        selectedPresentationSlides.map(slideObj =>
-                            <SlideCard
-                                slide={slideObj}
-                                selectedSlide={selectedSlide}
-                                setSelectedSlide={setSelectedSlide}/>)
-                        :
-                        null
-                    }
+                    <div className='pres-view'>
+                        {selectedPresentation ? <h3>{selectedPresentation.name}</h3> : null}
+                        {selectedPresentationSlides.length > 0 ?
+                            selectedPresentationSlides.map(slideObj =>
+                                <SlideCard
+                                    slide={slideObj}
+                                    selectedSlide={selectedSlide}
+                                    setSelectedSlide={setSelectedSlide}/>)
+                            :
+                            null
+                        }
+                    </div>
+                    <div className='tag-info'>
+                        {selectedSlide ?
+                            <TagTable
+                                ref={tagTableRef}
+                                createTagCallback={createSlideTagCallback}
+                                updateTagCallback={createSlideTagCallback}
+                                removeTagCallback={removeSlideTagCallback}
+                            /> : null
+                        }
+                    </div>
                 </div>
-                <div className='tag-info'>
-                    {selectedSlide ?
-                        <TagTable
-                            ref={tagTableRef}
-                            createTagCallback={createSlideTagCallback}
-                            updateTagCallback={createSlideTagCallback}
-                            removeTagCallback={removeSlideTagCallback}
-                        /> : null
-                    }
-                </div>
-            </div>
+                : null
+            }
             {showPresentationTags ? <PresentationTagsModal
                 setShowPresentationTags={setShowPresentationTags}
                 selectedPresentation={selectedPresentation}

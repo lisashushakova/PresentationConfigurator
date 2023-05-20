@@ -31,7 +31,6 @@ const BuildView = (props) => {
         <div className='BuildView'>
             <div className='toolbar'>
                 <button onClick={() => setShowImportSlides(true)}>Импорт слайдов</button>
-                <button onClick={() => setShowBuildPresentation(true)}>Собрать презентацию</button>
             </div>
             <div className='body'>
                 <SlidePoolBlock poolSlides={poolSlides} selectedPoolSlides={selectedPoolSlides} setSelectedPoolSlides={setSelectedPoolSlides}/>
@@ -43,7 +42,11 @@ const BuildView = (props) => {
                         <img src={moveSelectedIcon}/>
                     </button>
                 </div>
-                <PresentationPreviewBlock previewSlides={previewSlides} setPreviewSlides={setPreviewSlides}/>
+                <PresentationPreviewBlock
+                    previewSlides={previewSlides}
+                    setPreviewSlides={setPreviewSlides}
+                    setShowBuildPresentation={setShowBuildPresentation}
+                />
             </div>
 
             {showImportSlides ?

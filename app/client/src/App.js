@@ -80,6 +80,7 @@ function App() {
             <AppHeader
                 setShowUserTags={setShowUserTags}
                 setShowUserSettings={setShowUserSettings}
+                setShowFolderPreferences={setShowFolderPreferences}
             />
             <div className='content-wrapper'>
                 <AppSidebar

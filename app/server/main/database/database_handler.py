@@ -117,10 +117,10 @@ class PresentationLinks(Base):
 
 
 class DatabaseHandler:
-    def __init__(self, user, password, host, db, pool):
+    def __init__(self, user, password, host, db, pool, echo=True):
         self.engine = create_engine(
             f"postgresql://{user}:{password}@{host}/{db}",
-            echo=True,
+            echo=echo,
             future=True)
         self.Session = sessionmaker(bind=self.engine)
         self.pool = pool
@@ -463,8 +463,9 @@ class DatabaseHandler:
         link = self.find(SlideLinks, SlideLinks.slide_id == slide_id, SlideLinks.tag_id == tag.id)
         if tag and link:
             self.delete(SlideLinks, link.id)
-        links_with_tag = self.findall(SlideLinks, SlideLinks.tag_id == tag.id)
-        if len(links_with_tag) == 0:
+        slide_links_with_tag = self.findall(SlideLinks, SlideLinks.tag_id == tag.id)
+        pres_links_with_tag = self.findall(PresentationLinks, PresentationLinks.tag_id == tag.id)
+        if len(slide_links_with_tag) == len(pres_links_with_tag) == 0:
             self.delete(Tags, tag.id)
 
     def get_presentation_links(self, presentation_id, user_id):
@@ -507,8 +508,9 @@ class DatabaseHandler:
                          PresentationLinks.tag_id == tag.id)
         if tag and link:
             self.delete(PresentationLinks, link.id)
-        links_with_tag = self.findall(PresentationLinks, PresentationLinks.tag_id == tag.id)
-        if len(links_with_tag) == 0:
+        slide_links_with_tag = self.findall(SlideLinks, SlideLinks.tag_id == tag.id)
+        pres_links_with_tag = self.findall(PresentationLinks, PresentationLinks.tag_id == tag.id)
+        if len(slide_links_with_tag) == len(pres_links_with_tag) == 0:
             self.delete(Tags, tag.id)
 
     def get_presentations_by_tag_query(self, query, user_id):

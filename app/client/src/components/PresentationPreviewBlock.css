@@ -3,31 +3,58 @@
     height: 88.5vh;
     flex-direction: column;
     box-sizing: border-box;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.PresentationPreviewBlock > .body {
+    display: flex;
+    height: 80vh;
+    width: 100%;
+    flex-direction: column;
+    box-sizing: border-box;
     overflow-y: auto;
     position: relative;
     justify-content: flex-start;
     align-items: center;
 }
 
-.PresentationPreviewBlock > .PreviewSlideCard {
+.PresentationPreviewBlock  > .body > .PreviewSlideCard {
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
 
-.PresentationPreviewBlock > .PreviewSlideCard > img.widescreen_16_to_9 {
+.PresentationPreviewBlock  > .body > .PreviewSlideCard > img.widescreen_16_to_9 {
     aspect-ratio: calc(16 / 9);
     height: 30vh;
     border: 2px solid black;
     border-radius: 2vh;
 }
 
-.PresentationPreviewBlock > .PreviewSlideCard > img.standard_4_to_3 {
+.PresentationPreviewBlock  > .body > .PreviewSlideCard > img.standard_4_to_3 {
     aspect-ratio: calc(4 / 3);
     height: 30vh;
     border: 2px solid black;
     border-radius: 2vh;
+}
+
+.PresentationPreviewBlock  > button {
+    position: absolute;
+    bottom: 1vh;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 2vh;
+
+    background: white;
+
+    box-sizing: border-box;
+    padding: 1vh 2vw;
+    margin: 1vh;
+    border: 1px solid black;
+
 }
 
 .DropPad {

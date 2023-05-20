@@ -119,19 +119,25 @@ const PresentationPreviewBlock = (props) => {
                 setScrollSpeedRatio(0)
              }}
         >
-            {props.previewSlides.map((slide, previewIndex) =>
+            <div className='body'>
+                {props.previewSlides.map((slide, previewIndex) =>
                 <>
-                    <DropPad index={previewIndex} setToIndex={setToIndex}/>
-                    <PreviewSlideCard
-                        slide={slide}
-                        previewIndex={previewIndex}
-                        setPreviewSlides={props.setPreviewSlides}
-                        setDraggedSlide={setDraggedSlide}
-                        setFromIndex={setFromIndex}
-                    />
-                </>
-            )}
-            <DropPad index={props.previewSlides.length} setToIndex={setToIndex}/>
+                        <DropPad index={previewIndex} setToIndex={setToIndex}/>
+                        <PreviewSlideCard
+                            slide={slide}
+                            previewIndex={previewIndex}
+                            setPreviewSlides={props.setPreviewSlides}
+                            setDraggedSlide={setDraggedSlide}
+                            setFromIndex={setFromIndex}
+                        />
+                    </>
+                )}
+                <DropPad index={props.previewSlides.length} setToIndex={setToIndex}/>
+            </div>
+
+            {props.previewSlides.length > 0
+                ? <button onClick={() => props.setShowBuildPresentation(true)}>Собрать презентацию</button>
+                : null}
         </div>
     )
 

@@ -70,20 +70,17 @@ const BuildPresentationModal = (props) => {
                             return <>
                                 <h3>Имя презентации</h3>
                                 <div className='pres-name'>
-                                    Имя новой презентации:
                                     <input type="text" value={presName} placeholder='Новая презентация'
                                            onChange={e => setPresName((e.target.value))}/>
                                 </div>
                                 <h3>Расположение</h3>
                                 <div className='save-to'>
-                                    Сохранить презентацию на Google-Диск:
                                     <button onClick={() => setShowSelectFolder(true)}>
-                                        {saveTo ? saveTo.name : 'Выбрать расположение'}
+                                        {saveTo ? saveTo.name : 'Выбрать папку'}
                                     </button>
                                 </div>
                                 <h3>Стиль презентации</h3>
                                 <div className='style-templates'>
-                                    Применить стиль к презентации:
                                     <div className={'style-templates-list'}>
                                         {styleTemplates.length > 0 ? styleTemplates.map(template =>
                                                 <TemplateCard
@@ -95,7 +92,6 @@ const BuildPresentationModal = (props) => {
                                 </div>
                                 <h3>Соотношение</h3>
                                 <div className='ratio-filter'>
-                                    Формат слайдов:
                                     <div className='radio-wrapper'>
                                         <div>
                                             <input id='ratio-filter-widescreen' type='radio' name='ratio-filter'

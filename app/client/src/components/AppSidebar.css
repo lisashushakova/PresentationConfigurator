@@ -38,3 +38,7 @@
     border: 1px solid black;
     border-top: none;
 }
+
+.AppSidebar > button:first-child {
+    border-right: none;
+}

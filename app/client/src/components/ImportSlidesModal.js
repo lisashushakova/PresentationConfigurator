@@ -67,7 +67,6 @@ const ImportSlidesModal = (props) => {
             <div className='import-slides' onClick={e => e.stopPropagation()}>
                 <div className='presentation-filter'>
                     <h3>Презентации</h3>
-                    Анализировать слайды следующих презентаций:
                     {presentations.length > 0 ?
                         <>
                          <div className='presentation-list'>
@@ -88,21 +87,20 @@ const ImportSlidesModal = (props) => {
                 </div>
                 <div className='tag-filter'>
                     <h3>Теги</h3>
-                    Логическое выражение с тегами:
-                    <input type="text" value={tagQuery} onChange={(e) => {
+                    <input type="text" value={tagQuery} placeholder='tag1 > 100'
+                           onChange={(e) => {
                         setTagQuery(e.target.value)
                     }}/>
                 </div>
                 <div className='text-filter'>
                     <h3>Текст</h3>
-                    Ключевая фраза текста слайда:
-                    <input type="text" value={searchPhrase} onChange={(e) => {
+                    <input type="text" value={searchPhrase} placeholder='Текст слайда'
+                           onChange={(e) => {
                         setSearchPhrase(e.target.value)
                     }}/>
                 </div>
                 <div className='ratio-filter'>
                     <h3>Соотношение</h3>
-                    Формат слайдов:
                     <div className='radio-wrapper'>
                         <div>
                             <input id='ratio-filter-auto' type='radio' name='ratio-filter' value='auto' defaultChecked
