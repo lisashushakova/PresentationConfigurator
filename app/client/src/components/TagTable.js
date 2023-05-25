@@ -133,7 +133,14 @@ class TagTable extends React.Component {
             const tagsWithSameName = this.state.rows.filter(el => el.props.tagName === tagName)
             if (tagsWithSameName.length === 0) {
                 this.setState({rows: [...this.state.rows,
-                    <TableRow key={tagName} tagName={tagName} tagValue={tagValue} removeCallback={this.removeCallback}/>]})
+                    <TableRow
+                        key={tagName}
+                        tagName={tagName}
+                        tagValue={tagValue}
+                        removeCallback={this.removeCallback}
+                        updateTagCallback={this.props.createTagCallback}
+                    />
+                    ]})
                 this.props.createTagCallback(tagName, tagValue)
             } else {
                 tagInput.current.classList.add('error')

@@ -429,8 +429,8 @@ class DatabaseTestCase(unittest.TestCase):
             shutil.copyfile('files/slide_thumbnail_4.png', os.path.join(pres2_temp_images_path, 'Слайд1.png'))
             shutil.copyfile('files/slide_thumbnail_2.png', os.path.join(pres2_temp_images_path, 'Слайд2.png'))
 
-            presentations_ratio = [pres2_ratio]
-            presentations_text = [pres2_text]
+            presentations_ratio = [pres1_ratio, pres2_ratio]
+            presentations_text = [pres1_text, pres2_text]
             self.db_handler.sync_presentation_slides(synced, delta, presentations_ratio, presentations_text, user.id)
 
             slide1 = self.db_handler.find(Slides, Slides.pres_id == presentation1.get('id'))

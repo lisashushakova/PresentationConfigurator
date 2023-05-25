@@ -1,7 +1,5 @@
 import os
 import re
-import time
-from multiprocessing import Queue
 from multiprocessing.pool import ThreadPool
 
 import fastapi
@@ -35,7 +33,7 @@ app = fastapi.FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[api_origin, frontend_origin],
+    allow_origins=[api_origin, frontend_origin, 'http://localhost'],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -98,9 +96,10 @@ def logout(pres_conf_user_state: str = Cookie(default=None)):
 def file_tree(pres_conf_user_state: str = Cookie(default=None), only_folders=False):
     user_id, user_flow = auth_handler.get_user(pres_conf_user_state)
     drive_folders, drive_presentations, user_file_tree = drive_handler.get_user_file_tree(user_flow)
-    db_folders = db_handler.sync_folders(user_id, drive_folders)
     user_file_tree['is_root'] = True
     marked_presentations = []
+
+    db_folders = db_handler.sync_folders(user_id, drive_folders)
 
     def traverse(node):
         for db_folder in db_folders:

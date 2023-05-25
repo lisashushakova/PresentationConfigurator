@@ -82,7 +82,7 @@ class GoogleDriveHandler:
         if save_to is not None:
             file_metadata['parents'] = [save_to]
         media = MediaFileUpload(
-            os.path.join(SERVER_ROOT, f"presentation_processing/built/{user_id}/{name}.pptx"),
+            f"{name}.pptx",
             mimetype='application/vnd.openxmlformats-officedocument.presentationml.presentation'
         )
         file = drive.files().create(

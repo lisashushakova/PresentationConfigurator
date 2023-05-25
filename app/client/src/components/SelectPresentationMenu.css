@@ -159,14 +159,20 @@
     color: red;
 }
 
+.MenuObject.presentation {
+    pointer-events: none;
+}
+
 .MenuObject.presentation.created {
     animation: color-change-created 1s infinite alternate;
-    pointer-events: none;
 }
 
 .MenuObject.presentation.modified {
     animation: color-change-modified 1s infinite alternate;
-    pointer-events: none;
+}
+
+.MenuObject.presentation.default {
+    pointer-events: auto;
 }
 
 

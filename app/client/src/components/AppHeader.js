@@ -33,18 +33,17 @@ const SelectUserMenu = (props) => {
 const AppHeader = (props) => {
     const [showSelectUser, setShowSelectUser] = useState(false)
 
-    const [userLogged, setUserLogged] = useState(false)
     const [userInfo, setUserInfo] = useState({})
 
     useEffect(() => {
         const cookieIndex = document.cookie.indexOf('pres_conf_user_state')
-        setUserLogged(cookieIndex !== -1)
-        if (userLogged) {
+        props.setUserLogged(cookieIndex !== -1)
+        if (props.userLogged) {
             fetch("http://localhost:8000/auth/user-info", {credentials:"include"})
               .then(response => response.json())
               .then((data) => setUserInfo(data))
         }
-    }, [userLogged])
+    }, [props.userLogged])
 
 
     return (
@@ -77,8 +76,8 @@ const AppHeader = (props) => {
 
             </div>
             {showSelectUser ? <SelectUserMenu
-                userLogged={userLogged}
-                setUserLogged={setUserLogged}
+                userLogged={props.userLogged}
+                setUserLogged={props.setUserLogged}
                 userInfo={userInfo}
                 setUserInfo={setUserInfo}
             /> : null}

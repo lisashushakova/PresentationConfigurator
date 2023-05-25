@@ -29,7 +29,7 @@
 
 .AppHeader button, .AppHeader img {
     aspect-ratio: 1;
-    width: 4vh;
+    height: 4vh;
 }
 
 .AppHeader button:last-child > img {
@@ -64,6 +64,8 @@
     display: flex;
     flex-direction: column;
     gap: 1vh;
+
+    color: black;
 }
 
 .SelectUserMenu > div, .SelectUserMenu > button {

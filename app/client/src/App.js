@@ -1,17 +1,14 @@
 import React from 'react'
 import './App.css';
-import {useEffect, useLayoutEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import AppHeader from './components/AppHeader'
 import AppSidebar from "./components/AppSidebar";
 import UserTagsModal from "./components/UserTagsModal";
-import UserSettingsModal from "./components/UserSettingsModal";
 import TagView from "./components/TagView";
 import FolderPreferencesModal from "./components/FolderPreferencesModal";
-import PresentationTagsModal from "./components/PresentationTagsModal";
 import BuildView from "./components/BuildView";
-import ImportSlidesModal from "./components/ImportSlidesModal";
-import {wait} from "@testing-library/user-event/dist/utils";
-import {waitFor} from "@testing-library/react";
+
+
 
 export const AppMode = {
     TAG_MARKUP: 0,
@@ -23,6 +20,8 @@ function App() {
     const [userFileTree, setUserFileTree] = useState(null)
     const [created, setCreated] = useState([])
     const [modified, setModified] = useState([])
+    const [synced, setSynced] = useState([])
+    const [userLogged, setUserLogged] = useState(false)
 
     let waitForResponse = false
 
@@ -45,33 +44,37 @@ function App() {
     }
 
     const getSyncStatus = () => {
-        fetch('http://localhost:8000/files/sync-status', {credentials: "include"})
-            .then(res => res.json())
-            .then(colorFileTree)
-            .then(() => {
-                if (waitForResponse) {
-                    setTimeout(getSyncStatus, 2000)
-                }
-            })
+        if (userLogged) {
+            fetch('http://localhost:8000/files/sync-status', {credentials: "include"})
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data)
+                    colorFileTree(data)
+                })
+                .then(() => {
+                    if (waitForResponse) {
+                        setTimeout(getSyncStatus, 2000)
+                    }
+                })
+        }
     }
 
-    useEffect(() => {
-        console.log(created, modified)
-    }, [created, modified])
 
     useEffect(() => {
-        updateFiles()
-    }, [])
+        if (userLogged) {
+            updateFiles()
+        }
+    }, [userLogged])
 
     const colorFileTree = ((sync_data) => {
         setCreated(sync_data.created.map(pres => pres.id))
         setModified(sync_data.modified.map(pres => pres.id))
+        setSynced(sync_data.synced.map(pres => pres.id))
     })
 
 
     // Modal states
     const [showUserTags, setShowUserTags] = useState(false)
-    const [showUserSettings, setShowUserSettings] = useState(false)
     const [showFolderPreferences, setShowFolderPreferences] = useState(false)
 
 
@@ -79,8 +82,9 @@ function App() {
         <div className="App">
             <AppHeader
                 setShowUserTags={setShowUserTags}
-                setShowUserSettings={setShowUserSettings}
                 setShowFolderPreferences={setShowFolderPreferences}
+                userLogged={userLogged}
+                setUserLogged={setUserLogged}
             />
             <div className='content-wrapper'>
                 <AppSidebar
@@ -96,23 +100,18 @@ function App() {
                         updateFiles={updateFiles}
                         created={created}
                         modified={modified}
+                        synced={synced}
                     /> :
                     <BuildView userFileTree={userFileTree}/>}
             </div>
 
             {showUserTags ? <UserTagsModal setShowUserTags={setShowUserTags}/> : null}
-            {showUserSettings ? <UserSettingsModal
-                setShowUserSettings={setShowUserSettings}
-                setShowFolderPreferences={setShowFolderPreferences}
-            /> : null}
             {showFolderPreferences ? <FolderPreferencesModal
                 userFileTree={userFileTree}
                 updateFolders={updateFolders}
                 updateFiles={updateFiles}
                 setShowFolderPreferences={setShowFolderPreferences}
             /> : null}
-
-
         </div>
     );
 }

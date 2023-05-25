@@ -7,6 +7,7 @@ from threading import Lock
 
 from sqlalchemy import create_engine, ForeignKey, DateTime, Identity, text, update, select, asc, Boolean, Enum
 from sqlalchemy import Table, Column, Integer, String, MetaData, LargeBinary
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import declarative_base, relationship, scoped_session
 from sqlalchemy.orm import sessionmaker
 
@@ -169,9 +170,7 @@ class DatabaseHandler:
         return False, obj
 
     def read(self, table, obj_id):
-        session = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=self.engine))
+        session = self.Session()
         obj = session.query(table).get(obj_id)
         session.close()
         return obj
@@ -246,14 +245,17 @@ class DatabaseHandler:
     def sync_folders(self, user_id, actual_folders):
         synced_folders = []
         for folder in actual_folders:
-            _, db_folder = self.create(
-                Folders,
+            try:
+                _, db_folder = self.create(
+                    Folders,
 
-                id=folder.get('id'),
-                name=folder.get('name'),
-                mark=False,
-                owner_id=user_id
-            )
+                    id=folder.get('id'),
+                    name=folder.get('name'),
+                    mark=False,
+                    owner_id=user_id
+                )
+            except IntegrityError:
+                db_folder = self.read(Folders, folder.get('id'))
             synced_folders.append(db_folder)
 
         db_folders = self.findall(Folders, Folders.owner_id == user_id)
@@ -294,8 +296,7 @@ class DatabaseHandler:
             if created:
                 synced_presentations.append(actual_pres)
                 created_presentations.append(actual_pres)
-            else:
-                if datetime.strptime(actual_pres.get('modifiedTime'), '%Y-%m-%dT%H:%M:%S.%fZ') > db_pres.modified_time:
+            elif datetime.strptime(actual_pres.get('modifiedTime'), '%Y-%m-%dT%H:%M:%S.%fZ') > db_pres.modified_time:
                     self.update(
                         Presentations,
 
@@ -308,8 +309,10 @@ class DatabaseHandler:
                     )
                     synced_presentations.append(actual_pres)
                     modified_presentations.append(actual_pres)
+            else:
+                synced_presentations.append(actual_pres)
 
-        self.set_sync_query(user_id, (created_presentations, modified_presentations))
+        self.set_sync_query(user_id, (created_presentations, modified_presentations), synced_presentations)
 
         return synced_presentations, (created_presentations, modified_presentations)
 
@@ -671,12 +674,19 @@ class DatabaseHandler:
                 value=link.value
             )
 
-    def set_sync_query(self, user_id, delta):
+    def set_sync_query(self, user_id, delta, synced):
         self.sync_query[user_id] = {
             'created': delta[0],
             'modified': delta[1],
+            'synced': synced
         }
 
     def get_sync_query(self, user_id):
         if user_id in self.sync_query:
             return self.sync_query[user_id]
+        else:
+            return {
+                'created': [],
+                'modified': [],
+                'synced': []
+            }

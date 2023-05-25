@@ -87,11 +87,11 @@ const TagView = (props) => {
                     ).then(res => res.json()).then(data => data.filtered_presentations)
                 }
 
-                const traverse = (node) => {
+                const traverse = (node, parent_mark) => {
                     if (node.type === 'folder') {
                         node.menuObjectType = MenuObjectType.FOLDER
-                        const result = node.children.map(child => traverse(child))
-                        node.show = node.mark && result.some(child => child)
+                        const result = node.children.map(child => traverse(child, node.mark))
+                        node.show = result.some(child => child)
                         return node.show
                     } else {
                         node.menuObjectType = MenuObjectType.PRESENTATION
@@ -99,13 +99,13 @@ const TagView = (props) => {
                             node.status = 'created'
                         } else if (props.modified.includes(node.id)) {
                             node.status = 'modified'
-                        } else {
+                        } else if (props.synced.includes(node.id)) {
                             node.status = 'default'
                         }
                         switch (searchMode) {
                             case 'name':
-                                node.show = node.name.includes(searchFieldValue)
-                                return node.name.includes(searchFieldValue)
+                                node.show = parent_mark && node.name.toLowerCase().includes(searchFieldValue.toLowerCase())
+                                return node.show
                             case 'tags':
                                 if (filteredPresentations) {
                                     node.show = filteredPresentations.map(pres => pres.id).includes(node.id)

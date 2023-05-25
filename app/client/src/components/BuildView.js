@@ -35,10 +35,10 @@ const BuildView = (props) => {
             <div className='body'>
                 <SlidePoolBlock poolSlides={poolSlides} selectedPoolSlides={selectedPoolSlides} setSelectedPoolSlides={setSelectedPoolSlides}/>
                 <div className='controls'>
-                    <button onClick={moveAll}>
+                    <button onClick={moveAll} id={'moveAllBtn'}>
                         <img src={moveAllIcon}/>
                     </button>
-                    <button onClick={moveSelected}>
+                    <button onClick={moveSelected} id={'moveSelectedBtn'}>
                         <img src={moveSelectedIcon}/>
                     </button>
                 </div>

@@ -152,41 +152,25 @@ class PresentationProcessHandler:
 
     def build_presentation(self, name, slides_from, ratio, style_template, db_handler, user_id):
         with slides.Presentation() as presentation:
-            if ratio == 'widescreen_16_to_9':
-                presentation.slide_size.set_size(
-                    slides.SlideSizeType.ON_SCREEN_16X9,
-                    slides.SlideSizeScaleType.ENSURE_FIT
-                )
-            else:
-                presentation.slide_size.set_size(
-                    slides.SlideSizeType.ON_SCREEN,
-                    slides.SlideSizeScaleType.ENSURE_FIT
-                )
-
             presentation.slides.remove_at(0)
 
             seen_thumbs = []
-            seen_text = []
-            seen_slides = []
 
             for slide in slides_from:
-                with slides.Presentation(
-                        os.path.join(SERVER_ROOT, f"presentation_processing/temp/{slide.pres_id}/{slide.pres_id}.pptx")
-                ) as pres_from:
-                    pres_text = self.__extract_text({'id': slide.pres_id})
+                with slides.Presentation(f"{slide.pres_id}.pptx") as pres_from:
                     unique = True
-                    slide_thumb = db_handler.get_slide_thumb_by_index(user_id, slide.pres_id, slide.index)
-                    slide_text = pres_text[slide.index]
+                    slide_thumb = db_handler.get_slide_thumb_by_index(
+                        user_id,
+                        slide.pres_id,
+                        slide.index
+                    )
                     for seen_thumb in seen_thumbs:
                         if utils.img_eq(slide_thumb, seen_thumb):
                             unique = False
                             break
                     if unique:
                         presentation.slides.add_clone(pres_from.slides[slide.index])
-
                         seen_thumbs.append(slide_thumb)
-                        seen_text.append(slide_text)
-                        seen_slides.append(slide)
 
             # Applying styles
             if style_template:

@@ -6,6 +6,7 @@ const PreviewSlideCard = (props) => {
     return (
         <div className='PreviewSlideCard' draggable
             onDragStart={() => {
+                console.log('Started')
                 props.setDraggedSlide(props.slide)
                 props.setFromIndex(props.previewIndex)
             }}
@@ -30,10 +31,15 @@ const DropPad = (props) => {
         }} onDrop={() => {
             props.setToIndex(props.index)
             ref.current.classList.remove('dragover')
+            console.log('Dropped')
         }} onDragEnter={() => {
             ref.current.classList.add('dragover')
         }} onDragLeave={() => {
             ref.current.classList.remove('dragover')
+        }} onMouseUp={() => {
+            props.setToIndex(props.index)
+            ref.current.classList.remove('dragover')
+            console.log('Dropped')
         }}
         >
         </div>

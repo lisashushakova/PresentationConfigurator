@@ -135,7 +135,8 @@ const FolderPreferencesModal = (props) => {
     }, [folderStack])
 
     return (
-        <div className='FolderPreferencesModal' onClick={() => {
+        <div className='FolderPreferencesModal' onClick={(e) => {
+            e.stopPropagation()
             props.updateFiles()
             props.setShowFolderPreferences(false)
         }}>
